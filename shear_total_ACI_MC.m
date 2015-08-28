@@ -73,14 +73,8 @@ kv(isUorSide & (kv>0.75) ) = 0.75;
 % failure strain Eq. (11-6)
 ep_fe(isUorSide) = kv(isUorSide) .* ep_fu(isUorSide);
 
-isLargeEp = (isUorSide) & (ep_fe>0.004);
-nLargeEp = sum( isLargeEp );
-meanSmallEp = mean( ep_fe(~isLargeEp));
-stdSmallEp = std( ep_fe(~isLargeEp));
-covSmallEp = stdSmallEp/meanSmallEp;
-covLargeEp = covSmallEp;
-ep_fe( (isUorSide) & (ep_fe>0.004) ) = normrnd(0.004, 0.004*covLargeEp, nLargeEp, 1);
-% ep_fe( (isUorSide) & (ep_fe>0.004) ) = 0.004;
+covEp = std(ep_fu) / mean(ep_fu);
+ep_fe( ep_fe>0.004 ) = normrnd(0.004, 0.004*covEp, sum(ep_fe>0.004), 1);
 
 %% Wrapping
 
@@ -88,6 +82,7 @@ covEpFe = F_FRP_COV;
 ep_fe(isW) = normrnd(0.004, 0.004*covEpFe, sum(isW), 1);
 isWandOver = (isW) & (ep_fe > 0.75*ep_fu);
 ep_fe( isWandOver ) = 0.75*ep_fu(isWandOver);
+ep_fe( ep_fe<0 ) = 0;
 
 
 %% FRP contribution to shear resistance Eq. (11-3)
