@@ -127,7 +127,11 @@ betaL( isLongEnough ) = 1;
 betaL( ~isLongEnough ) = sin(pi*roLmax2Leff(~isLongEnough)/2);
 
 % Partial safety factor for debonding strength
-sDebond = 0.315*betaW.*betaL.*sqrt(EFrpMPA.*sqrt(fcMPA)./tFrpMM);
+if strcmp(FLAG, 'MODEL_ERROR')
+    sDebond = 0.427*betaW.*betaL.*sqrt(EFrpMPA.*sqrt(fcMPA)./tFrpMM);
+else
+    sDebond = 0.315*betaW.*betaL.*sqrt(EFrpMPA.*sqrt(fcMPA)./tFrpMM);
+end
 
 failMode = zeros(nCase, 1);
 sFrpDesignMax = zeros(nCase, 1);
