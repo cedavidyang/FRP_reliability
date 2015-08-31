@@ -102,9 +102,12 @@ switch DESIGN_CODE
     case {'GB', 'gb'}
         for iFactorFrp = 1:nFactorFrp
             switch SUB_TEST_DATABASE_NAME
-                case {'shear+side', 'shear+U', 'shear+W'}
+                case {'shear+side', 'shear+U'}
                     [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
-                        roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_GB('DESIGN_VALUE',[FACTOR_FRP(iFactorFrp); 1.25]);
+                        roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_GB('DESIGN_VALUE',[1.00; FACTOR_FRP(iFactorFrp)]);
+                case {'shear+W'}
+                    [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
+                        roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_GB('DESIGN_VALUE',[FACTOR_FRP(iFactorFrp); 1.25]);                    
                 case {'flexure+IC', 'flexure+ic'}
                     [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
                         isSteelYielding(:,iFactorFrp)] = flexure_total_GB('DESIGN_VALUE',...
