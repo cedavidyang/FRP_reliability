@@ -9,7 +9,7 @@ XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
 % sub-database of interest
 % shear+side: shear strengthening with side bonded FRP
 
-SUB_TEST_DATABASE_NAME ='shear+side';
+SUB_TEST_DATABASE_NAME ='shear+W';
 % SUB_TEST_DATABASE_NAME ='flexure+IC';
 
 % design code used
@@ -111,11 +111,11 @@ F_FRP_COV = 0.12;
 E_FRP_BIAS = 1.0;
 E_FRP_COV = 0.10;
 
-FC_BIAS = 1.25;
-% FC_BIAS = 1/(1-1.645*0.2);
+% FC_BIAS = 1.25;
+FC_BIAS = 1/(1-1.645*0.2);
 FC_COV = 0.20;
-FCT_BIAS = 1.25;
-% FCT_BIAS = 1/(1-1.645*0.2);
+% FCT_BIAS = 1.25;
+FCT_BIAS = 1/(1-1.645*0.2);
 FCT_COV = 0.20;
 
 FS_BIAS = 1.20;
