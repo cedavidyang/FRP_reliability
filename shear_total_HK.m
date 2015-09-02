@@ -214,6 +214,15 @@ shearConcreteKN( shearConcreteKN<0 ) = 0;
 shearTotalKN = shearFrpKN + shearSteelKN + shearConcreteKN;
 
 ro = shearSteelKN ./ (shearSteelKN + shearFrpKN);
+switch FLAG
+    case 'MODEL_ERROR'
+        shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
+    case 'DESIGN_VALUE'
+        psi_f = 0.9*ones(nCase, 1);
+        psi_f(isU) = 0.85;
+%         psi_f(isSide) = 0.5;
+        shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
+end
 
 sqrtFcuLimitDesign = min(sqrtFcuLimit1, sqrtFcuLimit2);
 isOverReinforce = shearTotalKN*1e3./(bBeamMM.*dBeamMM) > sqrtFcuLimitDesign;
