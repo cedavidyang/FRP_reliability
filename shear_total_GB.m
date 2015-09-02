@@ -158,7 +158,14 @@ shearFrpKN(isUorSide) = 1e-3 * debondFactor .* bondStrength .* widthFrpMM(isUorS
 shearFrpKN(isSide) = PHI0_SIDE * shearFrpKN(isSide);
 shearFrpKN(isU) = PHI0_U * shearFrpKN(isU);
 
-shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
+switch FLAG
+    case 'MODEL_ERROR'
+        shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
+    case 'DESIGN_VALUE'
+        psi_f = 0.75*ones(nCase, 1);
+        psi_f(isSide) = 0.5;
+        shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
+end
 ro = shearSteelKN ./ (shearSteelKN + shearFrpKN);
 
 % elimination of diagonal-compression failure
