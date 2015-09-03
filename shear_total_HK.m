@@ -219,8 +219,8 @@ switch FLAG
         shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
     case 'DESIGN_VALUE'
         psi_f = 0.9*ones(nCase, 1);
-        psi_f(isU) = 0.85;
-%         psi_f(isSide) = 0.5;
+        psi_f(isU) = 0.80;
+        psi_f(isSide) = 0.70;
         shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
 end
 
