@@ -162,7 +162,7 @@ switch FLAG
     case 'MODEL_ERROR'
         shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
     case 'DESIGN_VALUE'
-        psi_f = 0.95*ones(nCase, 1);
+        psi_f = 1.00*ones(nCase, 1);
         psi_f(isU) = 0.75;
         psi_f(isSide) = 0.5;
         shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
