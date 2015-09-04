@@ -13,7 +13,7 @@ SUB_TEST_DATABASE_NAME ='shear+W';
 % SUB_TEST_DATABASE_NAME ='flexure+IC';
 
 % design code used
-DESIGN_CODE = 'hk';
+DESIGN_CODE = 'gb';
 
 %% basic information for the establishment of design cases (shear)
 % H_DESIGN_MM: height of beam in mm
@@ -111,12 +111,13 @@ F_FRP_COV = 0.12;
 E_FRP_BIAS = 1.0;
 E_FRP_COV = 0.10;
 
-% FC_BIAS = 1.25;
-FC_BIAS = 1/(1-1.645*0.2);
 FC_COV = 0.20;
-% FCT_BIAS = 1.25;
-FCT_BIAS = 1/(1-1.645*0.2);
+% FC_BIAS = 1.25;
+FC_BIAS = 1/(1-1.645*FC_COV);
+
 FCT_COV = 0.20;
+% FCT_BIAS = 1.25;
+FCT_BIAS = 1/(1-1.645*FCT_COV);
 
 FS_BIAS = 1.20;
 FS_COV = 0.10;
@@ -129,8 +130,8 @@ DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 
 %% Information for reliability analysis
 % FACTOR_FRP = (0.50:0.05:1.00)';
-FACTOR_FRP = (1.00:0.05:1.50)';
+FACTOR_FRP = (1.00:0.05:2.00)';
 LOAD_RATIO = [0.50;2.0];
 ALPHA_MODEL_ERROR = 0.05;
 N_MC = 10000;
-TARGET_INDEX = 3.0;
+TARGET_INDEX = 3.2;
