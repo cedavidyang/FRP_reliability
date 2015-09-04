@@ -104,7 +104,6 @@ savefig('./figures/fig2.fig');
 
 switch SUB_TEST_DATABASE_NAME
     case {'flexure+IC', 'flexure+ic', 'flexure+rup', 'flexure+rupture'}
-        figure;
         figure1 = figure;
         axes1 = axes('Parent',figure1,'FontSize',12,'FontName','Times New Roman');
         box(axes1,'on');
