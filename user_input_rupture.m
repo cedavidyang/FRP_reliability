@@ -13,7 +13,7 @@ XLS_DATAFILE_PATH_AND_NAME = '.\flexure_database.xlsx';
 SUB_TEST_DATABASE_NAME ='flexure+rupture';
 
 % design code used
-DESIGN_CODE = 'hk';
+DESIGN_CODE = 'gb';
 
 %% basic information for the establishment of design cases (shear)
 % H_DESIGN_MM: height of beam in mm
@@ -94,7 +94,7 @@ FLEXURE_FRP_TYPE_DESIGN = 1;
 FLEXURE_FRP_CONFIG_DESIGN = 1;
 FLEXURE_RO_B_FRP_DESIGN = [0.5;1];
 % FLEXURE_T_FRP_DESIGN_MM = [0.4; 1.5];
-FLEXURE_T_FRP_DESIGN_MM = [0.2; 0.5];
+FLEXURE_T_FRP_DESIGN_MM = [0.2e-3; 0.5e-3];
 FLEXURE_E_FRP_DESIGN_MPA = [100e3; 200e3];
 % FLEXURE_STRAIN_FRP_DESIGN = [1.5/100; 2/100];
 FLEXURE_STRAIN_FRP_DESIGN = [1/100; 1.5/100];
@@ -111,12 +111,13 @@ F_FRP_COV = 0.12;
 E_FRP_BIAS = 1.0;
 E_FRP_COV = 0.10;
 
-FC_BIAS = 1.25;
-% FC_BIAS = 1/(1-1.645*0.2);
 FC_COV = 0.20;
-FCT_BIAS = 1.25;
-% FCT_BIAS = 1/(1-1.645*0.2);
+% FC_BIAS = 1.25;
+FC_BIAS = 1/(1-1.645*FC_COV);
+
 FCT_COV = 0.20;
+% FCT_BIAS = 1.25;
+FCT_BIAS = 1/(1-1.645*FCT_COV);
 
 FS_BIAS = 1.20;
 FS_COV = 0.10;
@@ -128,9 +129,9 @@ LIVE_BIAS = 1.0; LIVE_COV = 0.25;
 DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 
 %% Information for reliability analysis
-FACTOR_FRP = (0.50:0.05:1.50)';
-% FACTOR_FRP = (0.50:0.05:1.50)';
+% FACTOR_FRP = (0.50:0.05:1.00)';
+FACTOR_FRP = (1.00:0.05:2.00)';
 LOAD_RATIO = [0.50;2.0];
 ALPHA_MODEL_ERROR = 0.05;
 N_MC = 1;
-TARGET_INDEX = 3.0;
+TARGET_INDEX = 3.2;
