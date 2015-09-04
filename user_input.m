@@ -3,14 +3,14 @@
 clear; clc;
 
 % give the datafile path and name
-XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
-% XLS_DATAFILE_PATH_AND_NAME = '.\flexure_database.xlsx';                          
+% XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
+XLS_DATAFILE_PATH_AND_NAME = '.\flexure_database.xlsx';                          
 
 % sub-database of interest
 % shear+side: shear strengthening with side bonded FRP
 
-SUB_TEST_DATABASE_NAME ='shear+W';
-% SUB_TEST_DATABASE_NAME ='flexure+IC';
+% SUB_TEST_DATABASE_NAME ='shear+W';
+SUB_TEST_DATABASE_NAME ='flexure+IC';
 
 % design code used
 DESIGN_CODE = 'gb';
@@ -133,5 +133,5 @@ DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 FACTOR_FRP = (1.00:0.05:2.00)';
 LOAD_RATIO = [0.50;2.0];
 ALPHA_MODEL_ERROR = 0.05;
-N_MC = 10000;
+N_MC = 1;
 TARGET_INDEX = 3.2;
