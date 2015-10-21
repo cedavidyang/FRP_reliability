@@ -11,12 +11,18 @@ function [momentTotalKNM, failMode, isSteelYielding]= flexure_total_GB(FLAG, fac
 %                              0 (tensile steel does not yield)
 
 nFactorFrp = length(factorFrp);
-if nFactorFrp == 2
+if nFactorFrp == 3
     gammaFrp = factorFrp(1);
     gammaBond = factorFrp(2);
+    psi_f = factorFrp(3);
+elseif nFactorFrp == 2
+    gammaFrp = factorFrp(1);
+    gammaBond = factorFrp(2);
+    psi_f = 1;
 elseif nFactorFrp == 1
     gammaFrp = factorFrp;
     gammaBond = factorFrp;
+    psi_f = 1;
 end
 
 STRAIN_ULTI_CONCRETE = 0.0033;
@@ -151,6 +157,9 @@ failMode( isRupture|isAnchor ) = 2;
 eFrpCritical = zeros(nCase, 1);
 eFrpCritical(isRupture|isAnchor) = eFrpUlti( isRupture|isAnchor );
 eFrpCritical((~isRupture)&(~isAnchor)) = eDebond( (~isRupture)&(~isAnchor) );
+% if strcmp(FLAG, 'DESIGN_VALUE')
+%     eFrpCritical( (isRupture|isAnchor)&(eFrpCritical>0.01) ) = 0.01;
+% end
 %% determine c
 beta1 = 0.8*ones(nCase, 1);
 beta1( fcuMPA>fcuLimit2 ) = 0.74;
@@ -217,9 +226,9 @@ switch FLAG
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );    
     case {'DESIGN_VALUE'}
         phi = 1;
-        psi_f = ones(nCase,1);
-        psi_f((~isRupture)&(~isAnchor)) = 0.90;
-        psi_f(isRupture|isAnchor) = 0.50;
+%         psi_f = psi_f*ones(nCase,1);
+%         psi_f((~isRupture)&(~isAnchor)) = 0.90;
+%         psi_f(isRupture|isAnchor) = 0.50;
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + psi_f.*areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );  
     otherwise
 end
