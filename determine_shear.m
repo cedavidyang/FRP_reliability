@@ -21,6 +21,7 @@ fFrpSmp = wblrnd(wblparam(1), wblparam(2), nSim, 1);
 fcMean = FC_DESIGN_ARRAY_MPA(iDesignCase) * FC_BIAS;
 fcStd = fcMean * FC_COV;
 fcSmp = normrnd(fcMean, fcStd, nSim, 1);
+fcSmp(fcSmp<0) = 0;
 
 switch DESIGN_CODE
     case {'ACI', 'aci'}        
@@ -35,7 +36,25 @@ switch DESIGN_CODE
         fcuMean = fcMean / RO_CYLINDE_2_CUBE;
         fctMean = 0.395 .* fcuMean.^0.55;
         fctStd = fctMean * FCT_COV;
-        fctSmpNoBrittleFactor = normrnd(fctMean, fctStd, nSim, 1);        
+        fctSmpNoBrittleFactor = normrnd(fctMean, fctStd, nSim, 1);      
+    case {'TR', 'tr'}
+        fckMean = fcMean-8; fckMean(fckMean<0) = 0;
+        fctMean = 0.3 .* fckMean.^(2/3.0);
+        fctStd = fctMean * FCT_COV;
+        fctSmp = normrnd(fctMean, fctStd, nSim, 1); 
+        sqrtFctMean = sqrt(fctMean);
+        sqrtFctStd = sqrtFctMean * FCT_COV;
+        sqrtFctSmp = normrnd(sqrtFctMean, sqrtFctStd, nSim, 1);        
+%         sqrtFcMean = sqrt(fcMean);
+%         sqrrFcStd = sqrtFcMean * FCT_COV;
+%         sqrtFcSmp = normrnd(sqrtFcMean, sqrrFcStd, nSim, 1);
+%         cbrtFcMean = fcMean.^(1/3);
+%         cbrtFcStd = cbrtFcMean * FCT_COV;
+%         cbrtFcSmp = normrnd(cbrtFcMean, cbrtFcStd, nSim, 1);    
+    case {'ACInew', 'acinew'}        
+        sqrtFcMean = sqrt(fcMean);
+        sqrtFcStd = sqrtFcMean * FCT_COV;
+        sqrtFcSmp = normrnd(sqrtFcMean, sqrtFcStd, nSim, 1);
     otherwise
 end
 
@@ -52,6 +71,10 @@ switch DESIGN_CODE
         resistSmp = shear_total_HK_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, sqrtFcSmp, fsSmp);
     case{'GB' 'gb'}
         resistSmp = shear_total_GB_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, fctSmpNoBrittleFactor, fsSmp);
+    case{'TR' 'tr'}
+        resistSmp = shear_total_TR_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, fctSmp, sqrtFctSmp, fsSmp); 
+    case {'acinew' 'ACInew'}
+        resistSmp = shear_total_ACInew_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, sqrtFcSmp, fsSmp);       
     otherwise
 end
 
