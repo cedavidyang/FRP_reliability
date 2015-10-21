@@ -50,7 +50,7 @@ switch FLAG
         % limit values
         fcLimit = 28*FC_BIAS;
         % ratio of in-situ to cylinder strength
-        roInsitu = 1.00;        
+        roInsitu = 1.00;    
     case{'DESIGN_VALUE'}
         % geometric data
         bBeamMM = B_DESIGN_ARRAY_MM;
