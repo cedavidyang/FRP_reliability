@@ -13,12 +13,18 @@ function [momentTotalKNM, failMode, isSteelYielding]= flexure_total_HK(FLAG, fac
 %                              0 (tensile steel does not yield)
 
 nFactorFrp = length(factorFrp);
-if nFactorFrp == 2
+if nFactorFrp == 3
     gammaFrp = factorFrp(1);
     gammaBond = factorFrp(2);
+    psi_f = factorFrp(3);
+elseif nFactorFrp == 2
+    gammaFrp = factorFrp(1);
+    gammaBond = factorFrp(2);
+    psi_f = 1;
 elseif nFactorFrp == 1
     gammaFrp = factorFrp;
     gammaBond = factorFrp;
+    psi_f = 1;
 end
 
 PHI1 = 1.0;
@@ -120,7 +126,8 @@ eConcUlti( fcuMPA>fcuLimit ) = STRAIN_ULTI_CONCRETE - 0.00006*sqrt( fcuMPA( fcuM
 
 betaW = sqrt( (2-bFrpMM./bBeamMM) ./ (1+bFrpMM./bBeamMM) );
 % betaW = sqrt( (2.25-bFrpMM./bBeamMM) ./ (1.25+bFrpMM./bBeamMM) );
-tMax = 1.5*betaW.*(fctMPA ./ gammaConcrete);
+% tMax = 1.5*betaW.*(fctMPA ./ gammaConcrete);
+tMax = 1.5*betaW.*(fctMPA);
 Lee = 0.228*sqrt(EfrpMPA.*tFrpMM);
 Ld = shearMM - aFrpMM;
 alpha = 3.41*Lee./Ld;
@@ -206,16 +213,18 @@ switch FLAG
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-k2.*c) + areaFrpMM2.*ffe.*(hBeamMM-k2.*c) + (k2.*c-dCmpMM).*areaSteelCmpMM2.*fsc );    
     case {'DESIGN_VALUE'}
         phi = ones(nCase, 1);
-        esy = fsMPA./(gammaSteel*EsMPA);
-        isDuctile = es>ES_LIMIT;
-        isLessDuctile = (es>=esy) & es<=ES_LIMIT;
-        isBrittle = es<esy;
-        phi(isDuctile)  = PHI1;
-        phi(isLessDuctile) = PHI2 + 0.28*(es(isLessDuctile)-esy(isLessDuctile))./...
-            (ES_LIMIT-esy(isLessDuctile));
-        phi(isBrittle) = PHI2;
-        isSteelYielding(isLessDuctile) = 2;
-        momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-k2.*c) + areaFrpMM2.*ffe.*(hBeamMM-k2.*c) + (k2.*c-dCmpMM).*areaSteelCmpMM2.*fsc );
+%         esy = fsMPA./(gammaSteel*EsMPA);
+%         isDuctile = es>ES_LIMIT;
+%         isLessDuctile = (es>=esy) & es<=ES_LIMIT;
+%         isBrittle = es<esy;
+%         phi(isDuctile)  = PHI1;
+%         phi(isLessDuctile) = PHI2 + 0.28*(es(isLessDuctile)-esy(isLessDuctile))./...
+%             (ES_LIMIT-esy(isLessDuctile));
+%         phi(isBrittle) = PHI2;
+%         isSteelYielding(isLessDuctile) = 2;
+%         psi_f = ones(nCase,1);
+%         psi_f(isRupture|isAnchor) = 0.55;
+        momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-k2.*c) + psi_f.*areaFrpMM2.*ffe.*(hBeamMM-k2.*c) + (k2.*c-dCmpMM).*areaSteelCmpMM2.*fsc );
     otherwise
 end
 
