@@ -136,6 +136,8 @@ mu(isSide&(shearFrpKN == 0) ) = 0;
 kfrp( isSide&isWithSteel ) = A(isSide&isWithSteel)./ (A(isSide&isWithSteel)+mu(isSide&isWithSteel));
 
 % Update FRP contribution (consider FRP-steel interaction)
+% kfrp = ones(size(kfrp));
+% kfrp = -0.2*mu+1; kfrp(kfrp<0) = 0;
 shearFrpKN(isSide) = kfrp(isSide) .* shearFrpKN(isSide);
 shearFrpKN( isSide&shearFrpKN<0 ) = 0;
 
