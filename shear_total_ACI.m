@@ -1,7 +1,9 @@
 function [shearTotalKN, isOverReinforce,...
-         ro, shearReinforceKN] = shear_total_ACI(FLAG, factorFrp)
+         sidewarning, shearReinforceKN] = shear_total_ACI(FLAG, factorFrp)
+% function [shearTotalKN, isOverReinforce,...
+%          ro, shearReinforceKN] = shear_total_ACI(FLAG, factorFrp)
 % total shear resistance based on ACI 440.2R-08
-PHI = 0.75; % resistance reduce factor (ACI 318-11 9.3.2.3)
+PHI = 0.85; % resistance reduce factor (ACI 318-11 9.3.2.3)
 
 load tmpdata.mat
 
@@ -102,6 +104,11 @@ kv(isUorSide & (kv>0.75) ) = 0.75;
 % failure strain Eq. (11-6)
 ep_fe(isUorSide) = kv(isUorSide) .* ep_fu(isUorSide);
 ep_fe( (isUorSide) & (ep_fe>0.004) ) = 0.004;
+
+% keep track of side warning for side bonding (2Le>hfrp):
+indx = 2*leMM>dfvMM;
+sidewarning = zeros(nCase, 1);
+sidewarning(indx) = 1;
 
 %% Wrapping
 
