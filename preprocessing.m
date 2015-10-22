@@ -233,11 +233,17 @@ end
 %% Reliability analysis
 switch DESIGN_CODE
     case {'ACI', 'aci'}
-        LOAD_FACTOR = [1.4; 1.7];
+        LOAD_FACTOR = [1.4; 1.7];    %PHI=0.85
+%         LOAD_FACTOR = [1.2; 1.6];    %PHI=0.75
     case {'HK', 'hk'}
         LOAD_FACTOR = [1.4; 1.6];
     case {'GB', 'gb'}
         LOAD_FACTOR = [1.2; 1.4];
+    case {'TR', 'tr'}
+        LOAD_FACTOR = [1.35; 1.5];  
+    case {'ACInew', 'acinew'}
+        LOAD_FACTOR = [1.4; 1.7];    %PHI=0.85
+%         LOAD_FACTOR = [1.2; 1.6];    %PHI=0.75        
     otherwise
 end
         
