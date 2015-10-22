@@ -4,12 +4,18 @@ function [shearTotalKN, isOverReinforce,...
 % Considering the steel-FRP interaction
 
 nFactorFrp = length(factorFrp);
-if nFactorFrp == 2
+if nFactorFrp == 3
     gammaFrp = factorFrp(1);
     gammaBond = factorFrp(2);
+    psi_f = factorFrp(3);
+elseif nFactorFrp == 2
+    gammaFrp = factorFrp(1);
+    gammaBond = factorFrp(2);
+    psi_f = 1;
 elseif nFactorFrp == 1
     gammaFrp = factorFrp;
     gammaBond = factorFrp;
+    psi_f = 1;
 end
 
 % important constants
@@ -162,10 +168,12 @@ switch FLAG
     case 'MODEL_ERROR'
         shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
     case 'DESIGN_VALUE'
-        psi_f = 1.00*ones(nCase, 1);
-        psi_f(isU) = 0.75;
-        psi_f(isSide) = 0.5;
-        shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
+        shearFrpKN = psi_f * shearFrpKN;
+%         psi_f = psi_f*ones(nCase, 1);        
+%         psi_f(isU) = 0.75;
+%         psi_f(isSide) = 0.5;
+%         shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
+        shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
 end
 ro = shearSteelKN ./ (shearSteelKN + shearFrpKN);
 
