@@ -1,20 +1,4 @@
 % user input file
-% constant are defined by user in this file.
-clear; clc;
-
-% give the datafile path and name
-% XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
-XLS_DATAFILE_PATH_AND_NAME = '.\flexure_database.xlsx';                          
-
-% sub-database of interest
-% shear+side: shear strengthening with side bonded FRP
-
-% SUB_TEST_DATABASE_NAME ='shear+W';
-SUB_TEST_DATABASE_NAME ='flexure+IC';
-
-% design code used
-DESIGN_CODE = 'gb';
-
 %% basic information for the establishment of design cases (shear)
 % H_DESIGN_MM: height of beam in mm
 % AS_DESIGN_MM: distance from steel centroid to concrete surface in mm
@@ -104,23 +88,18 @@ H_NORM_MEAN = 3.05; H_STD_MM = 6.35;
 
 BETA_BIAS = 1; BETA_STD_DEG = 1;
 
-F_FRP_BIAS = 1.25;
-% F_FRP_BIAS = 1.42;
 F_FRP_COV = 0.12;
+% F_FRP_COV = 0.06;
+% F_FRP_BIAS = 1.42;
+F_FRP_BIAS = 1/(1-1.645*F_FRP_COV);
 
 E_FRP_BIAS = 1.0;
 E_FRP_COV = 0.10;
+% E_FRP_COV = 0.05;
 
-FC_COV = 0.20;
-% FC_BIAS = 1.25;
-FC_BIAS = 1/(1-1.645*FC_COV);
-
-FCT_COV = 0.20;
-% FCT_BIAS = 1.25;
-FCT_BIAS = 1/(1-1.645*FCT_COV);
-
-FS_BIAS = 1.20;
 FS_COV = 0.10;
+% FS_COV = 0.05;
+FS_BIAS = 1/(1-1.645*FS_COV);
 
 AS_BIAS = 1.0;
 AS_COV = 2.4/100;
@@ -129,9 +108,5 @@ LIVE_BIAS = 1.0; LIVE_COV = 0.25;
 DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 
 %% Information for reliability analysis
-% FACTOR_FRP = (0.50:0.05:1.00)';
-FACTOR_FRP = (1.00:0.05:2.00)';
 LOAD_RATIO = [0.50;2.0];
 ALPHA_MODEL_ERROR = 0.05;
-N_MC = 1;
-TARGET_INDEX = 3.2;

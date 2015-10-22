@@ -1,6 +1,5 @@
 % user input file
 % constant are defined by user in this file.
-clear; clc;
 
 % give the datafile path and name
 % XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
@@ -129,9 +128,4 @@ LIVE_BIAS = 1.0; LIVE_COV = 0.25;
 DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 
 %% Information for reliability analysis
-% FACTOR_FRP = (0.50:0.05:1.00)';
-FACTOR_FRP = (1.00:0.05:2.00)';
 LOAD_RATIO = [0.50;2.0];
-ALPHA_MODEL_ERROR = 0.05;
-N_MC = 1;
-TARGET_INDEX = 3.2;
