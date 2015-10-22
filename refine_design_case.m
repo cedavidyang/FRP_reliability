@@ -100,10 +100,15 @@ switch SUB_TEST_DATABASE_NAME
         resistanceDesign = resistanceDesign(isRupture, :);
         failMode = failMode(isRupture, :);
         isSteelYielding = isSteelYielding(isRupture, :);         
-    case{'shear+side', 'shear+U', 'shear+W'}
+    case {'shear+side', 'shear+U', 'shear+W'}
         switch DESIGN_CODE
             case {'ACI', 'aci'}
-                iCodeFactor = find(FACTOR_FRP==1.00);
+                switch SUB_TEST_DATABASE_NAME
+                    case{'shear+W'}
+                        iCodeFactor = find(FACTOR_FRP==0.95);
+                    otherwise
+                        iCodeFactor = find(FACTOR_FRP==0.85);
+                end
             case {'HK', 'hk'}
                 switch SUB_TEST_DATABASE_NAME
                     case{'shear+W'}
@@ -118,6 +123,20 @@ switch SUB_TEST_DATABASE_NAME
                     otherwise
                         iCodeFactor = find(FACTOR_FRP==1.00);
                 end
+            case {'TR', 'tr'}
+                switch SUB_TEST_DATABASE_NAME
+                    case{'shear+W'}
+                        iCodeFactor = find(FACTOR_FRP==1.40);
+                    otherwise
+                        iCodeFactor = find(FACTOR_FRP==1.00);
+                end  
+            case {'ACInew', 'acinew'}
+                switch SUB_TEST_DATABASE_NAME
+                    case{'shear+W'}
+                        iCodeFactor = find(FACTOR_FRP==0.95);
+                    otherwise
+                        iCodeFactor = find(FACTOR_FRP==0.85);
+                end              
             otherwise
         end        
         tmpisOverReinforce = isOverReinforce(:, iCodeFactor);
