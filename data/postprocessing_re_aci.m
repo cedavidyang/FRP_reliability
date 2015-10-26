@@ -1,17 +1,34 @@
 clear;
-FACTOR_FRP = (0.50:0.05:1.00)';
-code = 'acinew';
-% code = 'aci';
-fc = 'fcdet'; fc='85'; %fc='427';
-% fc = 'fc125';
-% fc = 'cov10';
-struct_s = load(strcat('data_', code, '_shear+side_', fc));
-struct_u = load(strcat('data_', code, '_shear+U_', fc));
-struct_w = load(strcat('data_', code, '_shear+W_', fc));
-beta_T_50=3.5;
-life_s = 50*log(normcdf(beta_T_50))./log(normcdf(struct_s.mean_RE)); life_s(life_s>75) = 75;
-life_u = 50*log(normcdf(beta_T_50))./log(normcdf(struct_u.mean_RE)); life_u(life_u>75) = 75;
-life_w = 50*log(normcdf(beta_T_50))./log(normcdf(struct_w.mean_RE)); life_w(life_w>75) = 75;
+MAX_YR = 50;
+code = input('design code\n', 's');
+switch lower(code)
+    case {'hk','tr'}
+        FACTOR_FRP = (1.00:0.05:2.00)';
+        beta_T_50=3.8;
+    case 'gb'
+        FACTOR_FRP = (1.00:0.05:2.00)';
+        beta_T_50=3.2;
+    case{'aci', 'acinew'}
+        FACTOR_FRP = (0.50:0.05:1.00)';
+        beta_T_50=3.5;
+    otherwise
+end
+fc_type = input('fc type: 1 for fcdet, 2 for 125 bias, 3 for cov10\n');
+switch fc_type
+    case 1
+        fc = 'fcdet'; fccov=0.2;
+    case 2
+        fc = 'fc125'; fccov=0.2;
+    case 3
+        fc = 'cov10'; fccov=0.1;
+    otherwise
+end
+struct_s = load(strcat('data_', code, '_shear+side_', fc, '_', num2str(fccov), '.mat'));
+struct_u = load(strcat('data_', code, '_shear+U_', fc, '_', num2str(fccov), '.mat'));
+struct_w = load(strcat('data_', code, '_shear+W_', fc, '_', num2str(fccov), '.mat'));
+life_s = 50*log(normcdf(beta_T_50))./log(normcdf(struct_s.mean_RE)); life_s(life_s>MAX_YR) = MAX_YR;
+life_u = 50*log(normcdf(beta_T_50))./log(normcdf(struct_u.mean_RE)); life_u(life_u>MAX_YR) = MAX_YR;
+life_w = 50*log(normcdf(beta_T_50))./log(normcdf(struct_w.mean_RE)); life_w(life_w>MAX_YR) = MAX_YR;
 
 %% post processing of reliability analysis
 figure1 = figure;
