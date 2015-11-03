@@ -65,7 +65,7 @@ indx2 = isUorSide&(lmbd>1);
 k2(indx2) = 1-(pi-2)./(pi*lmbd(indx2));
 % new parameter k3
 k3 = sqrt( (2-widthFrpMM./(sFrpMM.*sin(betaRAD)))./(1+widthFrpMM./(sFrpMM.*sin(betaRAD))) );
-% parameter kv Eq. (11-7)
+k3 = ones(nCase, 1);
 % parameter kv Eq. (11-7)
 kv(isUorSide) = k1(isUorSide) .* k2(isUorSide) .* k3(isUorSide) .* leMM(isUorSide) ./...
     (EFrpMPA(isUorSide).*tFrpMM(isUorSide).*ep_fu(isUorSide));
