@@ -321,7 +321,8 @@ for ischeme=ischeme_start:ischeme_end
                 otherwise
             end
             if fc_type == 1
-                save(strcat('./data/', 'me_', DESIGN_CODE, '.mat'), 'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
+                beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
+                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '.mat'), 'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
             end
             clearvars -except N_DESIGN_CASE N_MC LOAD_RATIO LOAD_FACTOR LIVE_BIAS LIVE_COV ...
                 DEAD_BIAS DEAD_COV SUB_TEST_DATABASE_NAME nFactorFrp nLoadRatio reliabilityResults ...
@@ -398,7 +399,7 @@ for ischeme=ischeme_start:ischeme_end
                 lower_RE(i_factor) = min(RE_col);
             end
             % save(strcat('./figures4_3D/', DESIGN_CODE, '_', SUB_TEST_DATABASE_NAME, num2str(psi_f(ipsi)), '.mat'), 'norm_RE', 'mean_RE', 'std_RE','upper_RE', 'lower_RE');            
-            save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
+%             save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
             % save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', num2str(fccov), '.mat'), 'fccov', 'mean_RE');
 
             % postprocessing_reliability
