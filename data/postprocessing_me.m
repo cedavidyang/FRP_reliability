@@ -2,7 +2,8 @@ clear;
 %% user input and data processing
 running_type = input(strcat('type of running: 1 for shear+side, 2 for shear+U,',...
 '3 for shear+W, 4 for flexure+IC, 5 for flexure+rupture\n'));
-fc_type = 1;
+fc_type = 1; fccov = 0.20;
+get_bias = @(x) 1/(1-1.645*x);
 DESIGN_CODE = lower(input('design guidelines/code\n', 's'));
 
 switch running_type
@@ -53,15 +54,13 @@ switch running_type
         indx = FRP_FORM_TEST_ARRAY==FRP_FORM_DESIGN;
     case {4,5}
         load(strcat('me_', DESIGN_CODE, '_', 'flexure'));
-        indx = FAIL_MODE_TEST_ARRAY == 1;
+        indx = FAIL_MODE_TEST_ARRAY == running_type-3;
     otherwise
         fprintf('illegal running type');
         break;
 end
 
-%% plot figures
-
-% post processing of model error analysis
+%% linear plot
 figure1 = figure;
 axes1 = axes('Parent',figure1,'FontSize',8,'FontName','Times New Roman');
 box(axes1,'on');
@@ -79,12 +78,17 @@ xtxt1 = xlabel('Predicted shear capacity, $V_{pre}$ (kN)','FontSize',8,'FontName
 ytxt1 = ylabel('Test result $V_{exp}$ (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'latex');
 ylim(axes1, [0, 1200]);
 
+%% PDF plot and distribution fitting
 figure2 = figure;
 axes2 = axes('Parent',figure2,'FontSize',8,'FontName','Times New Roman');
 box(axes2,'on');
 hold(axes2,'all');
 
 modelerror = resistanceFromTest(indx)./resistanceFromPrediction(indx);
+fprintf(strcat('model error mean of ', SUB_TEST_DATABASE_NAME, ': %.5f\n'), mean(modelerror))
+fprintf(strcat('model error std of ', SUB_TEST_DATABASE_NAME, ': %.5f\n'), std(modelerror))
+fprintf(strcat('model error cov of ', SUB_TEST_DATABASE_NAME, ': %.5f\n'), std(modelerror)/mean(modelerror))
+
 
 legh_ = []; legt_ = {};   % handles and text for legend
 [F_,X_] = ecdf(modelerror,'Function','cdf');  % compute empirical cdf
@@ -103,36 +107,52 @@ if all(isfinite(xlim_))
    set(axes2,'XLim',xlim_)
 end
 x_ = linspace(xlim_(1),xlim_(2),100);
-% --- Create fit "Normal"
 t_ = ~isnan(modelerror);
 Data_ = modelerror(t_);
-[p_(1), p_(2)] = normfit(Data_, 0.05);
-y_ = normpdf(x_,p_(1), p_(2));
+
+% --- Create fit "Normal"
+fprintf('------- Create fit "Normal" -------\n')
+[param_norm(1), param_norm(2)] = normfit(Data_, 0.05);
+y_ = normpdf(x_,param_norm(1), param_norm(2));
 h_ = plot(x_,y_,'Color', 'k', 'LineStyle','-.', 'LineWidth',1, 'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
 legt_{end+1} = 'Normal';
-param_norm = p_;
+
 % --- Create fit "Lognormal"
-t_ = ~isnan(modelerror);
-Data_ = modelerror(t_);
-p_ = lognfit(Data_, 0.05);
-y_ = lognpdf(x_,p_(1), p_(2));
+fprintf('------- Create fit "Lognormal" -------\n')
+param_log = lognfit(Data_, 0.05);
+y_ = lognpdf(x_,param_log(1),param_log(2));
 h_ = plot(x_,y_,'Color','k', 'LineStyle','-', 'LineWidth',1,'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
 legt_{end+1} = 'Lognormal';
-param_log = p_;
-% --- Create fit "Gamma"
-t_ = ~isnan(modelerror);
-Data_ = modelerror(t_);
-p_ = gamfit(Data_, 0.05);
-y_ = gampdf(x_,p_(1), p_(2));
+
+% --- Create fit "Gumbel(max)"
+fprintf('------- Create fit "Gumbel(max)" -------\n')
+param_gbl = evfit(-Data_, 0.05); % since MATLAB extreme value distribution is for minimum, use negative
+y_ = evpdf(-x_,param_gbl(1), param_gbl(2));
 h_ = plot(x_,y_,'Color','k','LineStyle','--', 'LineWidth',1,'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
-legt_{end+1} = 'Gamma';
-param_gam = p_;
+legt_{end+1} = 'Gumbel';
 
 leginfo_ = {'Orientation', 'vertical', 'Location', 'NorthEast'}; 
 h_ = legend(axes2,legh_,legt_,leginfo_{:}, 'FontSize',8,'FontName','Times New Roman', 'Interpreter', 'latex');  % create legend
+
+% output fitting results and hypothesis testing
+test_cdf_norm = [Data_, normcdf(Data_, param_norm(1), param_norm(2))];
+test_cdf_logn = [Data_, logncdf(Data_, param_log(1), param_log(2))];
+test_cdf_gbl = [-Data_, evcdf(-Data_, param_gbl(1), param_gbl(2))];
+[h_norm, p_norm] = kstest(Data_, 'CDF', test_cdf_norm);
+[h_logn, p_logn] = kstest(Data_, 'CDF', test_cdf_logn);
+[h_gbl, p_gbl] = kstest(-Data_, 'CDF', test_cdf_gbl);
+like_norm = sum(log(normpdf(Data_, param_norm(1), param_norm(2))));
+like_logn = sum(log(lognpdf(Data_, param_log(1), param_log(2))));
+like_gbl = sum(log(evpdf(-Data_, param_gbl(1), param_gbl(2))));
+disp('------- Hypothesis tests -------\n')
+disp({'normal', 'lognormal', 'gumbel'; h_norm, h_logn, h_gbl})
+disp('------- p-values -------\n')
+disp({'normal', 'lognormal', 'gumbel'; p_norm, p_logn, p_gbl})
+disp('------- loglikelihood -------\n')
+disp({'normal', 'lognormal', 'gumbel'; like_norm, like_logn, like_gbl})
 
 %% change the following properties from figure inspector
 set(figure1, 'Units','inches', 'Position', [0, 0, 3.5, 2.625]);
