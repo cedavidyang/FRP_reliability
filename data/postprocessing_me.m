@@ -1,21 +1,65 @@
 clear;
-code = 'acinew';
-% code = 'hk';
+%% user input and data processing
+running_type = input(strcat('type of running: 1 for shear+side, 2 for shear+U,',...
+'3 for shear+W, 4 for flexure+IC, 5 for flexure+rupture\n'));
+fc_type = 1;
+DESIGN_CODE = lower(input('design guidelines/code\n', 's'));
 
-load(strcat('me_', code));
-run('../user_input.m')
-run('../preprocessing.m')
-scheme=3;
-switch scheme
+switch running_type
     case 1
-        frp = 'side';
+        run('../user_input.m')
+        SUB_TEST_DATABASE_NAME ='shear+side';
     case 2
-        frp = 'U';
+        run('../user_input.m')
+        SUB_TEST_DATABASE_NAME ='shear+U';
     case 3
-        frp = 'W';
+        run('../user_input.m')
+        SUB_TEST_DATABASE_NAME ='shear+W';
+    case 4
+        run('../user_input.m')
+        SUB_TEST_DATABASE_NAME ='flexure+IC';
+    case 5
+        run('../user_input.m')
+        SUB_TEST_DATABASE_NAME ='flexure+rupture';
     otherwise
+        fprintf('illegal running type');
+        break;
 end
-indx = FRP_FORM_TEST_ARRAY==scheme;
+
+switch lower(DESIGN_CODE)
+    case {'aci', 'acinew'}
+        psi_f = 1.00;
+        FACTOR_FRP = (0.50:0.05:1.00)';
+        TARGET_INDEX = 3.5;
+    case {'hk', 'tr'}
+        psi_f = 0.5:0.05:1.00;
+        FACTOR_FRP = (1.00:0.05:2.00)';
+        TARGET_INDEX = 3.8;
+    case {'gb'}
+        psi_f = 0.5:0.05:1.00;
+        FACTOR_FRP = (1.00:0.05:2.00)';
+        TARGET_INDEX = 3.2;        
+end
+
+FC_COV = fccov;
+FC_BIAS = get_bias(FC_COV);
+FCT_COV = fccov;
+FCT_BIAS = get_bias(FCT_COV);
+run('../preprocessing.m')
+
+switch running_type
+    case {1, 2, 3}
+        load(strcat('me_', DESIGN_CODE, '_', 'shear'));
+        indx = FRP_FORM_TEST_ARRAY==FRP_FORM_DESIGN;
+    case {4,5}
+        load(strcat('me_', DESIGN_CODE, '_', 'flexure'));
+        indx = FAIL_MODE_TEST_ARRAY == 1;
+    otherwise
+        fprintf('illegal running type');
+        break;
+end
+
+%% plot figures
 
 % post processing of model error analysis
 figure1 = figure;
