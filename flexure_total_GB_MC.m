@@ -134,20 +134,24 @@ isSteelYielding = ones( nCase, 1 );
 %     hBeamMM, c, (fsMPA/gammaSteel), (fsCmpMPA/gammaSteel), (fcMPA/gammaConcrete),...
 %     areaSteelMM2, areaFrpMM2, areaSteelCmpMM2),...
 %     cIni, optimset('Display','off'));
-cIniArray = linspace(0.1*dCmpMM, dBeamMM, MAX_INITIAL_GUESS);
-for iC = 1:MAX_INITIAL_GUESS
-    cIni = cIniArray(iC);
-    [c, fval, exitflag] = fsolve( @(c) force_balance(beta1, eCo, EsMPA, EsCmpMPA, EfrpMPA,...
-        eFrpIni, eConcUlti, eFrpCritical, bBeamMM, bFlangeMM, tFlangeMM, dBeamMM, dCmpMM,...
-        hBeamMM, c, (fsMPA/gammaSteel), (fsCmpMPA/gammaSteel), (fcMPA/gammaConcrete),...
-        areaSteelMM2, areaFrpMM2, areaSteelCmpMM2),...
-        cIni, optimset('Display','off'));
-    if exitflag > 0 && abs(fval)<=CONVERGE_CRITERION && c<=hBeamMM
-        break
+[nSim,~] = size(dBeamMM);
+c = zeros(nSim, 1);
+for iSmp = 1:nSim
+    cIniArray = linspace(0.1*dCmpMM(iSmp), dBeamMM(iSmp), MAX_INITIAL_GUESS);
+    for iC = 1:MAX_INITIAL_GUESS
+        cIni = cIniArray(iC);
+        [c(iSmp), fval, exitflag] = fsolve( @(c) force_balance(beta1, eCo(iSmp), EsMPA(iSmp), EsCmpMPA(iSmp), EfrpMPA(iSmp),...
+            eFrpIni, eConcUlti, eFrpCritical(iSmp), bBeamMM(iSmp), bFlangeMM(iSmp), tFlangeMM(iSmp), dBeamMM(iSmp), dCmpMM(iSmp),...
+            hBeamMM(iSmp), c, (fsMPA(iSmp)/gammaSteel), (fsCmpMPA(iSmp)/gammaSteel), (fcMPA(iSmp)/gammaConcrete),...
+            areaSteelMM2(iSmp), areaFrpMM2(iSmp), areaSteelCmpMM2(iSmp)),...
+            cIni, optimset('Display','off'));
+        if exitflag > 0 && abs(fval)<=CONVERGE_CRITERION && c(iSmp)<=hBeamMM(iSmp)
+            break
+        end
     end
-end
-if iC > MAX_INITIAL_GUESS
-    fprintf('Failed convergence at %d, exitflag = %d, c=%.2f\n', i_test, exitflag, c)
+    if iC > MAX_INITIAL_GUESS
+        fprintf('Failed convergence at %d, exitflag = %d, c=%.2f\n', i_test, exitflag, c)
+    end
 end
 %% other approaches when dc>0.5 beta1 c
 %     if dCmpMM(iCase) > 0.5 * beta1(iCase) * c(iCase)
