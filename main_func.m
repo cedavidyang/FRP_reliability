@@ -108,12 +108,12 @@ for ischeme=ischeme_start:ischeme_end
                     user_input;
                     SUB_TEST_DATABASE_NAME ='flexure+IC';
                     % reliability
-                    N_MC = 1;
+                    N_MC = 100;
                 case 5
                     user_input_rupture;
                     SUB_TEST_DATABASE_NAME ='flexure+rupture';
                     % reliability
-                    N_MC = 1;                    
+                    N_MC = 100;                    
                 otherwise
                     fprintf('illegal running type');
             end
@@ -336,12 +336,13 @@ for ischeme=ischeme_start:ischeme_end
 
             matlabpool 6
             parfor iDesignCase = 1:N_DESIGN_CASE
-            % for iDesignCase = 1:N_DESIGN_CASE    
+%             for iDesignCase = 1:N_DESIGN_CASE    
                 switch SUB_TEST_DATABASE_NAME
                     case {'shear+side', 'shear+U', 'shear+W'}
                         [tmpResistMean, tmpResistStd, tmpResistSmp] = determine_shear(iDesignCase, N_MC);
                     case {'flexure+IC', 'flexure+ic', 'flexure+rup', 'flexure+rupture'}
-                        [tmpResistMean, tmpResistStd, tmpResistSmp] = determine_flexure_rosenblueth(iDesignCase, N_MC);
+%                         [tmpResistMean, tmpResistStd, tmpResistSmp] = determine_flexure_rosenblueth(iDesignCase, N_MC);
+                        [tmpResistMean, tmpResistStd, tmpResistSmp] = determine_flexure_lhs(iDesignCase, N_MC);
                     otherwise
                 end
                 resistMean(iDesignCase) = tmpResistMean;
@@ -399,7 +400,7 @@ for ischeme=ischeme_start:ischeme_end
                 lower_RE(i_factor) = min(RE_col);
             end
             % save(strcat('./figures4_3D/', DESIGN_CODE, '_', SUB_TEST_DATABASE_NAME, num2str(psi_f(ipsi)), '.mat'), 'norm_RE', 'mean_RE', 'std_RE','upper_RE', 'lower_RE');            
-%             save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
+            save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
             % save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', num2str(fccov), '.mat'), 'fccov', 'mean_RE');
 
             % postprocessing_reliability
