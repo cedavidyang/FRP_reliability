@@ -32,8 +32,8 @@ bFlangeMM = BF_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 tFlangeMM = TF_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 dCmpMM = D_CMP_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 % concrete properties
-fcMPA = fcSmp;
-sqrtFc = sqrtFcSmp;
+fcMPA = fcSmp; fcMPA(fcMPA<0) = 0;
+sqrtFc = sqrt(fcSmp);
 % steel reinforcement
 EsMPA = ES_DESIGN_ARRAY_MPA(iDesignCase) * ones(nCase, 1);
 fsMPA = fsSmp;

@@ -41,6 +41,7 @@ shearMM = SHEAR_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 % concrete properties
 fcMPA = fcSmp;
 fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
+fctSmpNoBrittleFactor = 0.395 .* fcuMPA.^0.55;
 fctMPA = fctSmpNoBrittleFactor;
 % steel reinforcement
 EsMPA = ES_DESIGN_ARRAY_MPA(iDesignCase) * ones(nCase, 1);

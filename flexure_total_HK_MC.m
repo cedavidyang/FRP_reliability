@@ -42,9 +42,9 @@ dCmpMM = D_CMP_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 aFrpMM = FRP_END_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 shearMM = SHEAR_DESIGN_ARRAY_MM(iDesignCase) * ones(nCase, 1);
 % concrete properties
-fcMPA = fcSmp;
+fcMPA = fcSmp; fcMPA(fcMPA<0) = 0;
 fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
-fctMPA = fctSmp;
+fctMPA = 0.5*sqrt(fcMPA);
 % steel reinforcement
 EsMPA = ES_DESIGN_ARRAY_MPA(iDesignCase) * ones(nCase, 1);
 fsMPA = fsSmp;
