@@ -31,8 +31,8 @@ s2d = S2D_DESIGN_ARRAY(iDesignCase)*ones(nCase, 1);
 % Concrete properties
 fcMPA = fcSmp;
 fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
+fctSmpNoBrittleFactor = 0.395 .* fcuMPA.^0.55;
 fctMPA = fctSmpNoBrittleFactor;
-% sqrtFcuSmp = sqrtFcSmp./sqrt(0.8);
 % steel properties
 fsMPA = fsSmp;
 sdMM = SD_DESIGN_ARRAY_MM(iDesignCase)*ones(nCase, 1);

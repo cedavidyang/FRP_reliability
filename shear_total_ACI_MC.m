@@ -13,7 +13,6 @@ bBeamMM = hSmp/H2B_DESIGN_ARRAY(iDesignCase);
 dFrpTopMM = DFRP_TOP_DESIGN_ARRAY_MM(iDesignCase)*ones(nCase, 1);
 % Concrete properties
 fcMPA = fcSmp;
-sqrt_fc = sqrtFcSmp;
 % steel properties
 fsMPA = fsSmp;
 sdMM = SD_DESIGN_ARRAY_MM(iDesignCase)*ones(nCase, 1);
@@ -109,11 +108,11 @@ areaV_Min = 0.062*sqrt(fcMPA) .* bBeamMM .* ssMM ./ fsMPA;
 tmp = (0.35*bBeamMM .* sdMM) ./ fsMPA;
 areaV_Min( areaV_Min < tmp ) = tmp(areaV_Min < tmp); 
 
+sqrt_fc = sqrt(fcMPA);
 isAdjust = (areaVMM2<areaV_Min) & (sqrt_fc>sqrtFcLimit);
 nAdjust = sum( isAdjust );
-covAdjust = FCT_COV;
+covAdjust = std(sqrt_fc)/mean(sqrt_fc);
 sqrt_fc( isAdjust ) = normrnd( sqrtFcLimit, sqrtFcLimit*covAdjust, nAdjust, 1);
-% sqrt_fc( isAdjust ) = sqrtFcLimit;
 
 shearConcreteKN = 0.17*sqrt_fc .* bBeamMM .* dBeamMM / 1e3;
 shearConcreteKN(shearConcreteKN<0) = 0;

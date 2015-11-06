@@ -26,8 +26,9 @@ bBeamMM = hSmp/H2B_DESIGN_ARRAY(iDesignCase);
 dFrpMM = hSmp;
 dFrpTopMM = DFRP_TOP_DESIGN_ARRAY_MM(iDesignCase)*ones(nCase, 1);
 % Concrete properties
-fcMPA = fcSmp;
+fcMPA = fcSmp; fcMPA(fcMPA<0) = 0;
 fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
+sqrtFcSmp = sqrt(fcMPA);
 % sqrtFcuSmp = sqrtFcSmp./sqrt(0.8);
 % steel properties
 barType = BAR_TYPE_DESIGN_ARRAY(iDesignCase)*ones(nCase, 1);
@@ -156,19 +157,8 @@ areaSteelMin = vr.* bBeamMM .* ssMM ./ (fsMPA/gammaSteel);
 tmp1Mean = mean(tmp1);
 tmp1Mean( tmp1Mean<0.8*roInsitu ) = 0.8*roInsitu; 
 tmp1Mean( mean(areaVMM2) >= mean(areaSteelMin) & tmp1Mean<1 ) = 1;
-tmp1Cov = FCT_COV;
-tmp1 = normrnd(tmp1Mean, tmp1Mean*tmp1Cov, nCase, 1);
+tmp1 = tmp1Mean;
 tmp1(tmp1<0) = 0;
-% isNormal = (tmp1>=1) | (areaVMM2<areaSteelMin & tmp1>=0.8 & tmp1<1);
-% smpNormal = tmp1(isNormal);
-% covNormal = std(smpNormal)/mean(smpNormal);
-% covNotNormal = min(FCT_COV, covNormal);
-% isSmallType1 = (tmp1<0.8);
-% nSmallType1 = sum(isSmallType1);
-% isSmallType2 = (areaVMM2 >= areaSteelMin & tmp1<1);
-% nSmallType2 = sum(isSmallType2);
-% tmp1( isSmallType1 ) = normrnd(0.8, 0.8*covNotNormal, nSmallType1, 1); 
-% tmp1( isSmallType2 ) = normrnd(1, covNotNormal, nSmallType2, 1);
 
 vcDesign = 0.79*(100*RO_BEND_STEEL).^(1/3).*tmp1 .* 1/gammaConcrete;
 shearConcreteKN = vcDesign .* bBeamMM .* dBeamMM *1e-3;
