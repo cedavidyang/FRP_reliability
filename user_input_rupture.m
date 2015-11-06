@@ -1,19 +1,4 @@
 % user input file
-% constant are defined by user in this file.
-
-% give the datafile path and name
-% XLS_DATAFILE_PATH_AND_NAME = '.\shear_database.xlsx';
-XLS_DATAFILE_PATH_AND_NAME = '.\flexure_database.xlsx';                          
-
-% sub-database of interest
-% shear+side: shear strengthening with side bonded FRP
-
-% SUB_TEST_DATABASE_NAME ='shear+side';
-SUB_TEST_DATABASE_NAME ='flexure+rupture';
-
-% design code used
-DESIGN_CODE = 'gb';
-
 %% basic information for the establishment of design cases (shear)
 % H_DESIGN_MM: height of beam in mm
 % AS_DESIGN_MM: distance from steel centroid to concrete surface in mm
@@ -129,3 +114,4 @@ DEAD_BIAS = 1.05; DEAD_COV = 0.10;
 
 %% Information for reliability analysis
 LOAD_RATIO = [0.50;2.0];
+ALPHA_MODEL_ERROR = 0.05;
