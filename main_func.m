@@ -70,12 +70,12 @@ switch lower(design_code)
         FACTOR_FRP = (0.50:0.05:1.00)';
         TARGET_INDEX = 3.5;
     case {'hk', 'tr'}
-        psi_f = 0.5:0.05:1.00;
-        FACTOR_FRP = (1.00:0.05:2.00)';
+        psi_f = (0.10:0.05:2.00)';
+        FACTOR_FRP = 1.00;
         TARGET_INDEX = 3.8;
     case {'gb'}
-        psi_f = 0.5:0.05:1.00;
-        FACTOR_FRP = (1.00:0.05:2.00)';
+        psi_f = (0.10:0.05:2.00)';
+        FACTOR_FRP = 1.00;
         TARGET_INDEX = 3.2;        
 end
 
@@ -113,7 +113,7 @@ for ischeme=ischeme_start:ischeme_end
                     user_input_rupture;
                     SUB_TEST_DATABASE_NAME ='flexure+rupture';
                     % reliability
-                    N_MC = 100;                    
+                    N_MC = 100;
                 otherwise
                     fprintf('illegal running type');
             end
@@ -289,7 +289,7 @@ for ischeme=ischeme_start:ischeme_end
             delete 'tmpdata.mat'
             % postprocessing_design_case;
 
-            refine_design_case;
+%             refine_design_case;
 
             save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
             %% Time-invariant reliability analysis
@@ -400,7 +400,7 @@ for ischeme=ischeme_start:ischeme_end
                 lower_RE(i_factor) = min(RE_col);
             end
             % save(strcat('./figures4_3D/', DESIGN_CODE, '_', SUB_TEST_DATABASE_NAME, num2str(psi_f(ipsi)), '.mat'), 'norm_RE', 'mean_RE', 'std_RE','upper_RE', 'lower_RE');            
-            save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
+            save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '_psi', num2str(psi_f(ipsi)), '.mat'));
             % save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', num2str(fccov), '.mat'), 'fccov', 'mean_RE');
 
             % postprocessing_reliability
