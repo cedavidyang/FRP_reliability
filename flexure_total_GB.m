@@ -151,13 +151,13 @@ fcMPA = roInsitu .* prism2Cube .* alphaBrittle .* fcuMPA;
 failMode = ones(nCase , 1 );
 betaW = sqrt( ( 2.25 - bFrpMM./bBeamMM ) ./ (1.25 + bFrpMM./bBeamMM) );
 Ld = shearMM - aFrpMM;
-eDebond = (1.1./sqrt(EfrpMPA.*tFrpMM) - 0.2./Ld) .* betaW .* (fctMPA/gammaConcrete) ./ gammaBond;
-eFrpUlti = (fFrpMPA/gammaFrp) ./ EfrpMPA;
+eDebond = psi_f * (1.1./sqrt(EfrpMPA.*tFrpMM) - 0.2./Ld) .* betaW .* (fctMPA/gammaConcrete) ./ gammaBond;
+eFrpUlti = psi_f * (fFrpMPA/gammaFrp) ./ EfrpMPA;
 isRupture = eDebond > eFrpUlti;
 failMode( isRupture|isAnchor ) = 2;
 eFrpCritical = zeros(nCase, 1);
-eFrpCritical(isRupture|isAnchor) = psi_f *eFrpUlti( isRupture|isAnchor );
-eFrpCritical((~isRupture)&(~isAnchor)) = psi_f * eDebond( (~isRupture)&(~isAnchor) );
+eFrpCritical(isRupture|isAnchor) = eFrpUlti( isRupture|isAnchor );
+eFrpCritical((~isRupture)&(~isAnchor)) = eDebond( (~isRupture)&(~isAnchor) );
 % if strcmp(FLAG, 'DESIGN_VALUE')
 %     eFrpCritical( (isRupture|isAnchor)&(eFrpCritical>0.01) ) = 0.01;
 % end
