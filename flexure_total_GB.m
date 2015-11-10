@@ -156,7 +156,7 @@ eFrpUlti = (fFrpMPA/gammaFrp) ./ EfrpMPA;
 isRupture = eDebond > eFrpUlti;
 failMode( isRupture|isAnchor ) = 2;
 eFrpCritical = zeros(nCase, 1);
-eFrpCritical(isRupture|isAnchor) = eFrpUlti( isRupture|isAnchor );
+eFrpCritical(isRupture|isAnchor) = psi_f *eFrpUlti( isRupture|isAnchor );
 eFrpCritical((~isRupture)&(~isAnchor)) = psi_f * eDebond( (~isRupture)&(~isAnchor) );
 % if strcmp(FLAG, 'DESIGN_VALUE')
 %     eFrpCritical( (isRupture|isAnchor)&(eFrpCritical>0.01) ) = 0.01;
@@ -226,11 +226,11 @@ switch FLAG
         phi = 1;
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );    
     case {'DESIGN_VALUE'}
-        phi = 1; psi_f = 1;
+        phi = 1;
 %         psi_f = psi_f*ones(nCase,1);
 %         psi_f((~isRupture)&(~isAnchor)) = 0.90;
 %         psi_f(isRupture|isAnchor) = 0.50;
-        momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + psi_f.*areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );  
+        momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );  
     otherwise
 end
 
