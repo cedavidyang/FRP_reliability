@@ -51,7 +51,8 @@ switch FLAG
         % concrete properties
         fcMPA = FC_TEST_ARRAY_MPA;
         fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
-        fctMPA = 0.5*sqrt(fcuMPA);
+%         fctMPA = 0.5*sqrt(fcuMPA);
+        fctMPA = 0.395*fcuMPA.^0.55;
         % steel reinforcement
         EsMPA = ES_TEST_ARRAY_MPA;
         fsMPA = FS_TEST_ARRAY_MPA;
@@ -89,7 +90,7 @@ switch FLAG
         % concrete properties
         fcMPA = FC_DESIGN_ARRAY_MPA;
         fcuMPA = fcMPA / RO_CYLINDE_2_CUBE;
-        fctMPA = 0.395*fcuMPA.^0.55;
+        fctMPA = 0.395*fcuMPA.^0.55.*(1-1.645*FCT_COV).^(0.45);
         % steel reinforcement
         EsMPA = ES_DESIGN_ARRAY_MPA;
         fsMPA = FS_DESIGN_ARRAY_MPA;
