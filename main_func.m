@@ -76,7 +76,7 @@ switch lower(design_code)
     case {'gb'}
         psi_f = (0.10:0.05:2.00)';
         FACTOR_FRP = 1.00;
-        TARGET_INDEX = 3.2;        
+        TARGET_INDEX = 3.7;        
 end
 
 re_data = {};
@@ -287,12 +287,12 @@ for ischeme=ischeme_start:ischeme_end
                 otherwise
                     disp('[main_function]: unknown guidelines');
             end
-            delete 'tmpdata.mat'
+%             delete 'tmpdata.mat'
             % postprocessing_design_case;
 
-            refine_design_case;
+%             refine_design_case;
 
-            save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
+%             save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
             %% Time-invariant reliability analysis
 
             nLoadRatio = length(LOAD_RATIO);
@@ -333,7 +333,7 @@ for ischeme=ischeme_start:ischeme_end
                 cov_interval ...
                 running_type fc_type design_code ischeme_start ischeme_end ...
                 fccov_start fccov_end get_bias FACTOR_FRP TARGET_INDEX ...
-                N_MC
+                N_MC re_data
             
             matlabpool 6
             parfor iDesignCase = 1:N_DESIGN_CASE
@@ -411,6 +411,6 @@ for ischeme=ischeme_start:ischeme_end
             % delete tmpUsefulVariables.mat
             % delete tmpAllVariables.mat
         end
-        save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
+        save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), num2str(fccov), '.mat'));
     end
 end
