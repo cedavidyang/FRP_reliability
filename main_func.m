@@ -290,7 +290,7 @@ for ischeme=ischeme_start:ischeme_end
             delete 'tmpdata.mat'
             % postprocessing_design_case;
 
-%             refine_design_case;
+            refine_design_case;
 
             save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
             %% Time-invariant reliability analysis
