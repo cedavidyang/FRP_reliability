@@ -3,7 +3,7 @@
 clear; %clc;
 cov_interval = 0.01;
 running_type = input(strcat('type of running: 1 for shear+side, 2 for shear+U,',...
-'3 for shear+W, 4 for flexure+IC, 5 for flexure+rupture, 6 for 1-3,', ...
+'3 for shear+W, 4 for flexure+IC,\n 5 for flexure+rupture, 6 for 1-3,', ...
 '7 for 4-5, 8 for 1-5\n'));
 fc_type = input('fc type: 1 for fcdet, 2 for 125 bias, 3 for cov10, 4 for 0.10:0.01:0.20 det dc\n');
 design_code = input('design guidelines/code\n', 's');
@@ -79,6 +79,7 @@ switch lower(design_code)
         TARGET_INDEX = 3.2;        
 end
 
+re_data = {};
 for ischeme=ischeme_start:ischeme_end
     for fccov=fccov_start:cov_interval:fccov_end;
         for ipsi = 1:length(psi_f)
@@ -320,9 +321,9 @@ for ischeme=ischeme_start:ischeme_end
                     modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2)); 
                 otherwise
             end
-            if fc_type == 1
+            if ipsi == 1
                 beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
-                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '.mat'), 'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
+                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '_fccov', num2str(fccov), '.mat'), 'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
             end
             clearvars -except N_DESIGN_CASE N_MC LOAD_RATIO LOAD_FACTOR LIVE_BIAS LIVE_COV ...
                 DEAD_BIAS DEAD_COV SUB_TEST_DATABASE_NAME nFactorFrp nLoadRatio reliabilityResults ...
@@ -333,7 +334,7 @@ for ischeme=ischeme_start:ischeme_end
                 running_type fc_type design_code ischeme_start ischeme_end ...
                 fccov_start fccov_end get_bias FACTOR_FRP TARGET_INDEX ...
                 N_MC
-
+            
             matlabpool 6
             parfor iDesignCase = 1:N_DESIGN_CASE
 %             for iDesignCase = 1:N_DESIGN_CASE    
@@ -383,30 +384,33 @@ for ischeme=ischeme_start:ischeme_end
 
             delete tmpdata.mat
 
-            norm_RE = zeros(nFactorFrp,1);
-            mean_RE = zeros(nFactorFrp,1);
-            std_RE = zeros(nFactorFrp,1);
-            upper_RE = zeros(nFactorFrp,1);
-            lower_RE = zeros(nFactorFrp,1);
-            for i_factor = 1:nFactorFrp
-                RE_col = reliabilityResults(:, i_factor, :);
-                RE_col = RE_col(:);
-                RE_col( isnan(RE_col) ) = [];
-
-                norm_RE(i_factor) = mean((RE_col-TARGET_INDEX).^2);
-                mean_RE(i_factor) = mean(RE_col);
-                std_RE(i_factor) = std(RE_col);
-                upper_RE(i_factor) = max(RE_col);
-                lower_RE(i_factor) = min(RE_col);
-            end
+            % save data
+            re_data{end+1} = reliabilityResults;
+            
+%             norm_RE = zeros(nFactorFrp,1);
+%             mean_RE = zeros(nFactorFrp,1);
+%             std_RE = zeros(nFactorFrp,1);
+%             upper_RE = zeros(nFactorFrp,1);
+%             lower_RE = zeros(nFactorFrp,1);
+%             for i_factor = 1:nFactorFrp
+%                 RE_col = reliabilityResults(:, i_factor, :);
+%                 RE_col = RE_col(:);
+%                 RE_col( isnan(RE_col) ) = [];
+% 
+%                 norm_RE(i_factor) = mean((RE_col-TARGET_INDEX).^2);
+%                 mean_RE(i_factor) = mean(RE_col);
+%                 std_RE(i_factor) = std(RE_col);
+%                 upper_RE(i_factor) = max(RE_col);
+%                 lower_RE(i_factor) = min(RE_col);
+%             end
             % save(strcat('./figures4_3D/', DESIGN_CODE, '_', SUB_TEST_DATABASE_NAME, num2str(psi_f(ipsi)), '.mat'), 'norm_RE', 'mean_RE', 'std_RE','upper_RE', 'lower_RE');            
-            save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '_psi', num2str(psi_f(ipsi)), '.mat'));
+            % save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '_psi', num2str(psi_f(ipsi)), '.mat'));
             % save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', num2str(fccov), '.mat'), 'fccov', 'mean_RE');
 
             % postprocessing_reliability
             % delete tmpUsefulVariables.mat
             % delete tmpAllVariables.mat
-
         end
+        save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '.mat'));
     end
 end
