@@ -79,9 +79,9 @@ switch lower(design_code)
         TARGET_INDEX = 3.7;        
 end
 
-re_data = {};
 for ischeme=ischeme_start:ischeme_end
     for fccov=fccov_start:cov_interval:fccov_end;
+        re_data = {};
         for ipsi = 1:length(psi_f)
             DESIGN_CODE = lower(design_code);
             % material
