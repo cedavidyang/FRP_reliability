@@ -158,9 +158,10 @@ failMode( isRupture|isAnchor ) = 2;
 eFrpCritical = zeros(nCase, 1);
 eFrpCritical(isRupture|isAnchor) = eFrpUlti( isRupture|isAnchor );
 eFrpCritical((~isRupture)&(~isAnchor)) = eDebond( (~isRupture)&(~isAnchor) );
-% if strcmp(FLAG, 'DESIGN_VALUE')
-%     eFrpCritical( (isRupture|isAnchor)&(eFrpCritical>0.01) ) = 0.01;
-% end
+if strcmp(FLAG, 'DESIGN_VALUE')
+    eFrpCritical( eFrpCritical>0.01 ) = 0.01;
+end
+
 %% determine c
 beta1 = 0.8*ones(nCase, 1);
 beta1( fcuMPA>fcuLimit2 ) = 0.74;
