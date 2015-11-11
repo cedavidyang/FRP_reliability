@@ -145,15 +145,15 @@ isW = (frpForm == 3);
 lambdaEf = N_FRP_LEG * widthFrpMM(isW) .* tFrpMM(isW) ./...
            (bBeamMM(isW).*sFrpMM(isW).*sin(betaFrpRAD(isW))) .*...
            EFrpMPA(isW) ./ (fctMPA(isW)/gammaConcrete);
-eFrpEff = 8 ./ ( sqrt(lambdaEf)+10 ) .* (fFrpMPA(isW)/gammaFrp) ./ EFrpMPA(isW);  
-sFrpEff = min( (fFrpMPA(isW)/gammaFrp), EFrpMPA(isW).*eFrpEff);
+eFrpEff = psi_f * 8 ./ ( sqrt(lambdaEf)+10 ) .* (fFrpMPA(isW)/gammaFrp) ./ EFrpMPA(isW);  
+sFrpEff = min( psi_f*(fFrpMPA(isW)/gammaFrp), psi_f*EFrpMPA(isW).*eFrpEff);
 shearFrpKN(isW) = 1e-3 * N_FRP_LEG .* widthFrpMM(isW) .* tFrpMM(isW) ./...
                   sFrpMM(isW) .* sFrpEff .* hFrpEff(isW) .* ...
                   ( sin(betaFrpRAD(isW)) + cos(betaFrpRAD(isW)) );              
 
 betaW = sqrt( (2.25-widthFrpMM(isUorSide) ./ (sFrpMM(isUorSide).*sin(betaFrpRAD(isUorSide)))) ./...
               (1.25+widthFrpMM(isUorSide) ./ (sFrpMM(isUorSide).*sin(betaFrpRAD(isUorSide)))) );
-bondStrength = 1.2 * betaW .* (fctMPA(isUorSide)/gammaConcrete) / gammaBond;
+bondStrength = psi_f*1.2 * betaW .* (fctMPA(isUorSide)/gammaConcrete) / gammaBond;
 debondFactor = sin(betaFrpRAD(isUorSide)) .* sqrt(EFrpMPA(isUorSide).*tFrpMM(isUorSide)) ./...
               ( sin(betaFrpRAD(isUorSide)).*sqrt(EFrpMPA(isUorSide).*tFrpMM(isUorSide)) +...
               0.3*hFrpEff(isUorSide).*(fctMPA(isUorSide)/gammaConcrete) ) ;
@@ -168,11 +168,7 @@ switch FLAG
     case 'MODEL_ERROR'
         shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
     case 'DESIGN_VALUE'
-        shearFrpKN = psi_f * shearFrpKN;
-%         psi_f = psi_f*ones(nCase, 1);        
-%         psi_f(isU) = 0.75;
-%         psi_f(isSide) = 0.5;
-%         shearTotalKN = shearConcreteKN+ shearSteelKN + psi_f.*shearFrpKN;
+%         shearFrpKN = psi_f * shearFrpKN;
         shearTotalKN = shearConcreteKN+ shearSteelKN + shearFrpKN;
 end
 ro = shearSteelKN ./ (shearSteelKN + shearFrpKN);
