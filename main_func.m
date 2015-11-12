@@ -67,7 +67,7 @@ end
 switch lower(design_code)
     case {'aci', 'acinew'}
         psi_f = 1.00;
-        FACTOR_FRP = (0.50:0.05:1.00)';
+        FACTOR_FRP = (0.10:0.05:2.00)';
         TARGET_INDEX = 3.5;
     case {'hk', 'tr'}
         psi_f = (0.10:0.05:2.00)';
