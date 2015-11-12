@@ -385,7 +385,11 @@ for ischeme=ischeme_start:ischeme_end
             delete tmpdata.mat
 
             % save data
-            re_data{end+1} = reliabilityResults;
+            if fc_type ~=4 || psi_f(ipsi) == 1
+                re_data{end+1} = reliabilityResults;
+            else
+                continue
+            end
             
 %             norm_RE = zeros(nFactorFrp,1);
 %             mean_RE = zeros(nFactorFrp,1);
@@ -411,6 +415,11 @@ for ischeme=ischeme_start:ischeme_end
             % delete tmpUsefulVariables.mat
             % delete tmpAllVariables.mat
         end
-        save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), num2str(fccov), '.mat'));
+        if fc_type ~=4 
+            save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), num2str(fccov), '.mat'));
+        end
+    end
+    if fc_type == 4
+        save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_fccov.mat'));
     end
 end
