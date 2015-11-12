@@ -66,7 +66,7 @@ switch frp_form
             plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
             plot(psi_f, upper_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
             plot(psi_f, lower_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
-            xtxt = xlabel('FRP reduction factor','FontSize',8,...
+            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Reliability index','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
@@ -75,10 +75,10 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            xtxt = xlabel('FRP reduction factor','FontSize',8,...
+            plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1, 'MarkerFace', 'k', 'MarkerEdge', 'k', 'MarkerSize', 4);
+            plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1, 'MarkerFace', 'b', 'MarkerEdge', 'b', 'MarkerSize', 4);
+            plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1, 'MarkerFace', 'r', 'MarkerEdge', 'r', 'MarkerSize', 4);
+            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
@@ -107,7 +107,7 @@ switch frp_form
         for idata = 1:2
             [re_smpi, mean_REi, std_REi, upper_REi, lower_REi, norm_RE_yr30i, ...
                 norm_RE_yr40i, norm_RE_yr50i] = get_re_data( ...
-                data_struct_array{idata}, FACTOR_FRP, code, beta_T_50);
+                data_struct_array{idata}, psi_f, code, beta_T_50);
             smp_RE{end+1} = re_smpi;
             mean_RE{end+1} = mean_REi;
             std_RE{end+1} = std_REi;
@@ -126,10 +126,14 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
+            h1 = plot(psi_f, upper_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            h2 = plot(psi_f, lower_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            X=[psi_f', fliplr(psi_f')];                %#create continuous x value array for plotting
+            Y=[upper_RE{ifig},fliplr(lower_RE{ifig})];              %#create continuous x value array for plotting
+            h3 = fill(X, Y, [0.99, 0.92, 0.8]);
+            uistack(h3,'bottom');
             plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
-            plot(psi_f, upper_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
-            plot(psi_f, lower_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
-            xtxt = xlabel('FRP reduction factor','FontSize',8,...
+            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Reliability index','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
@@ -141,7 +145,7 @@ switch frp_form
             plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
             plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1.5, 'MarkerSize', 4);
             plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            xtxt = xlabel('FRP reduction factor','FontSize',8,...
+            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
