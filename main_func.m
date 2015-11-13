@@ -114,12 +114,12 @@ for ischeme=ischeme_start:ischeme_end
                     user_input;
                     SUB_TEST_DATABASE_NAME ='flexure+IC';
                     % reliability
-                    N_MC = 100;
+                    N_MC = 500;
                 case 5
                     user_input_rupture;
                     SUB_TEST_DATABASE_NAME ='flexure+rupture';
                     % reliability
-                    N_MC = 100;
+                    N_MC = 500;
                 otherwise
                     fprintf('illegal running type');
             end
