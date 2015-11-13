@@ -59,6 +59,11 @@ switch fc_type
         fccov_end = 0.20;
         get_bias = @(x) 1/(1-1.645*x);
         fc_name = @(x) strcat('cov', num2str(100.*x));
+    case 5
+        fccov_start = 0.15;
+        fccov_end = 0.15;
+        get_bias = @(x) 1/(1-1.645*x);
+        fc_name = @(x) 'cov15';
     otherwise
         fprintf('illegal fc type')
         break
