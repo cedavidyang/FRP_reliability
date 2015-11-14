@@ -22,6 +22,8 @@ switch fc_type
         fc = 'fc125'; fccov=0.2;
     case 3
         fc = 'cov10'; fccov=0.1;
+    case 5
+        fc = 'cov15'; fccov=0.15;    
     otherwise
 end
 
@@ -63,9 +65,15 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
-            plot(psi_f, upper_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
-            plot(psi_f, lower_RE{ifig}, 'b--', 'LineWidth', 1, 'MarkerSize', 4);
+            h1 = plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
+            h2 = plot(psi_f, upper_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            h3 = plot(psi_f, lower_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            X=[psi_f', fliplr(psi_f')];                %#create continuous x value array for plotting
+            Y=[upper_RE{ifig},fliplr(lower_RE{ifig})];              %#create continuous x value array for plotting
+            h4 = fill(X, Y, [0.99, 0.92, 0.8]);
+            uistack(h4,'bottom');
+            set(axs{end}, 'Layer', 'top')
+            legend([h1, h2, h3], {'mean', 'upper bound', 'load bound'})
             xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Reliability index','FontSize',8,...
@@ -126,13 +134,15 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            h1 = plot(psi_f, upper_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
-            h2 = plot(psi_f, lower_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            h1 = plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
+            h2 = plot(psi_f, upper_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
+            h3 = plot(psi_f, lower_RE{ifig}, 'b-', 'LineWidth', 1, 'MarkerSize', 4);
             X=[psi_f', fliplr(psi_f')];                %#create continuous x value array for plotting
             Y=[upper_RE{ifig},fliplr(lower_RE{ifig})];              %#create continuous x value array for plotting
-            h3 = fill(X, Y, [0.99, 0.92, 0.8]);
-            uistack(h3,'bottom');
-            plot(psi_f, mean_RE{ifig}, 'k-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
+            h4 = fill(X, Y, [0.99, 0.92, 0.8]);
+            uistack(h4,'bottom');
+            set(axs{end}, 'Layer', 'top')
+            legend([h1, h2, h3], {'mean', 'upper bound', 'load bound'})
             xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Reliability index','FontSize',8,...
