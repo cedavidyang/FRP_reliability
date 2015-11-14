@@ -85,8 +85,13 @@ switch lower(design_code)
 end
 
 for ischeme=ischeme_start:ischeme_end
-    for fccov=fccov_start:cov_interval:fccov_end;
+    if fc_type ==4
         re_data = {};
+    end
+    for fccov=fccov_start:cov_interval:fccov_end;
+        if fc_type ~=4
+            re_data = {};
+        end
         for ipsi = 1:length(psi_f)
             DESIGN_CODE = lower(design_code);
             % material
