@@ -34,7 +34,8 @@ switch FLAG
         % constant partial safety factors
         gammaConcrete = 1.00;
         gammaSteel = 1.00;
-        gammaEfrp = 1.00;
+        gammaEfrp = (gammaBond/psi_f).^2;
+        gammaEPfrp = (gammaFrp/psi_f)./gammaEfrp;        
         % geometrical properties
         hBeamMM = ext_data.H_TEST_ARRAY_MM;
         dBeamMM = ext_data.D_TEST_ARRAY_MM;
@@ -46,6 +47,7 @@ switch FLAG
         fcMPA = ext_data.FC_TEST_ARRAY_MPA;
         fckMPA = fcMPA - 8;
         fctMPA = 0.3 .* fckMPA.^(2/3.0);
+        fctk = 0.7*fctMPA;
         % steel mean properties
         fsMPA = ext_data.FS_TEST_ARRAY_MPA;
         sdMM = ext_data.SD_TEST_ARRAY_MM;
@@ -57,15 +59,14 @@ switch FLAG
         betaFrpDEG = ext_data.BETA_TEST_ARRAY_DEG;
         tFrpMM = ext_data.T_FRP_TEST_ARRAY_MM;
         widthFrpMM = ext_data.W_FRP_TEST_ARRAY_MM;
-        sFrpMM = ext_data.S_FRP_TEST_ARRAY_MM;
-        % ratio of in-situ to cylinder strength
-        roInsitu = 1.0;  
+        sFrpMM = ext_data.S_FRP_TEST_ARRAY_MM; 
     case 'DESIGN_VALUE'
         nCase = length(ext_data.FC_DESIGN_ARRAY_MPA);
         % constant partial safety factors
         gammaConcrete = 1.50;
         gammaSteel = 1.15;  
-        gammaEfrp = 1.00;
+        gammaEfrp = (gammaBond/psi_f).^2;
+        gammaEPfrp = (gammaFrp/psi_f)./gammaEfrp;
         % geometrical properties
         hBeamMM = ext_data.H_DESIGN_ARRAY_MM;
         dBeamMM = ext_data.D_DESIGN_ARRAY_MM;
@@ -76,7 +77,8 @@ switch FLAG
         % Concrete characteristic properties
         fcMPA = ext_data.FC_DESIGN_ARRAY_MPA;
         fckMPA = fcMPA;
-        fctMPA = 0.21 .* fckMPA.^(2/3.0);
+        fctm = 0.21 .* fckMPA.^(2/3.0); fctk = 0.7*fctm;
+        fctMPA = fctk;
         % steel characteristic properties
         fsMPA = ext_data.FS_DESIGN_ARRAY_MPA;
         sdMM = ext_data.SD_DESIGN_ARRAY_MM;
@@ -88,9 +90,7 @@ switch FLAG
         betaFrpDEG = ext_data.BETA_DESIGN_ARRAY_DEG;
         tFrpMM = ext_data.T_FRP_DESIGN_ARRAY_MM;
         widthFrpMM = ext_data.W_FRP_DESIGN_ARRAY_MM;
-        sFrpMM = ext_data.S_FRP_DESIGN_ARRAY_MM;
-        % ratio of in-situ to cylinder strength
-        roInsitu = 0.88;         
+        sFrpMM = ext_data.S_FRP_DESIGN_ARRAY_MM;        
     otherwise
 end
 
@@ -114,19 +114,19 @@ Efd = EFrpMPA/gammaEfrp;
 ltmax = 0.7*sqrt( Efd.*tFrpMM./fctMPA );
 beta = betaFrpDEG/180*pi;
 epf1 = 0.5*(fFrpMPA/gammaFrp)./Efd;
-epf2 = 0.5*sqrt(fctMPA./(Efd.*tFrpMM)) / (gammaBond);
+epf2 = 0.5*sqrt(fctMPA./(Efd.*tFrpMM));
 epf3 = 0.004*ones(nCase,1);
 epf = min([epf1'; epf2'; epf3'])';
 Afw = N_FRP_LEG .* widthFrpMM .* tFrpMM;  
-Vf = psi_f*Afw./sFrpMM.*(hFrpEff-ns/3.*ltmax).*Efd.*epf.*(sin(beta)+cos(beta));
+Vf = Afw./sFrpMM.*(hFrpEff-ns/3.*ltmax.*cos(beta)).*Efd.*epf.*(sin(beta)+cos(beta));
 Vf(Vf<0) =0;
 
 %% Without steel stirrups
 indx0 = ssMM==0 | sdMM==0;
 %Vrd = (Crd*k*(100*rhol*fck).^(1/3)+k1*scp)*bw*d;
 k = 1+sqrt(200./dBeamMM);
-shearConc = (0.18/gammaConcrete).*k.*(fckMPA).^(1/3).*bBeamMM.*dBeamMM ;
-shearConcMin = 0.035*k.^(3/2).*sqrt(fckMPA).*bBeamMM.*dBeamMM;
+shearConc = (0.18/gammaConcrete).*k.*(fcMPA).^(1/3).*bBeamMM.*dBeamMM ;
+shearConcMin = 0.035*k.^(3/2).*sqrt(fcMPA).*bBeamMM.*dBeamMM;
 shearConc(shearConc<shearConcMin) = shearConcMin(shearConc<shearConcMin);
 shearTotalMinKN = 1e-3*(shearConc+Vf);
 shearTotalKN(indx0) = 1e-3*(shearConc(indx0)+Vf(indx0));

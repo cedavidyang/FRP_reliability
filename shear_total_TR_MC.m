@@ -70,9 +70,9 @@ isW = (frpForm == 3);
 
 ns = zeros(nCase, 1); ns(isU) = 1; ns(isSide) = 2;
 Efd = EFrpMPA/gammaEfrp;
-ltmax = 0.7*sqrt( Efd.*tFrpMM./fctm); ltmax(fctm==0) = hFrpEff(fctm==0)./sin(beta(fctm==0));
+ltmax = 0.7*sqrt( Efd.*tFrpMM./fctMPA); ltmax(fctMPA==0) = hFrpEff(fctMPA==0)./sin(beta(fctMPA==0));
 epf1 = 0.5*(fFrpMPA/gammaFrp)./Efd;
-epf2 = 0.5*sqrt(fctm./(Efd.*tFrpMM)) / (gammaBond);
+epf2 = 0.5*sqrt(fctm./(Efd.*tFrpMM));
 epf3 = epf1;
 covEp = std(epf1) / mean(epf1);
 epf3( epf3>0.004 ) = normrnd(0.004, 0.004*covEp, sum(epf3>0.004), 1);
@@ -84,8 +84,8 @@ Vf = Afw./sFrpMM.*(hFrpEff-ns/3.*ltmax.*cos(beta)).*Efd.*epf.*(sin(beta)+cos(bet
 indx0 = ssMM==0 | sdMM==0;
 %Vrd = (Crd*k*(100*rhol*fck).^(1/3)+k1*scp)*bw*d;
 k = 1+sqrt(200./dBeamMM);
-shearConc = (0.18/gammaConcrete).*k.*(fckMPA).^(1/3).*bBeamMM.*dBeamMM ;
-shearConcMin = 0.035*k.^(3/2).*sqrt(fckMPA).*bBeamMM.*dBeamMM;
+shearConc = (0.18/gammaConcrete).*k.*(fcMPA).^(1/3).*bBeamMM.*dBeamMM ;
+shearConcMin = 0.035*k.^(3/2).*sqrt(fcMPA).*bBeamMM.*dBeamMM;
 shearConc(shearConc<shearConcMin) = shearConcMin(shearConc<shearConcMin);
 shearTotalMinKN = 1e-3*(shearConc+Vf);
 shearTotalKN(indx0) = 1e-3*(shearConc(indx0)+Vf(indx0));
