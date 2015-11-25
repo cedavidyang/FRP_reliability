@@ -262,7 +262,6 @@ for iCol = 1:nCol
     Ac( c<=tf & bf~=b ) = bf(c<=tf & bf~=b) .* c( c<=tf & bf~=b ); % Type I T section
     Ac( c>tf & bf~=b ) = b( c>tf & bf~=b ) .* c( c>tf & bf~=b ) + ( bf( c>tf & bf~=b )-b( c>tf & bf~=b )) .*tf( c>tf & bf~=b ); % Type II T section
     r = As.*fs + Afrp.*ffe - As_c.*fsc - k1.*((0.8*roInsitu)*fcud).*Ac;
-%     f = 0.5 * ( (As.*fs + Afrp.*ffe) + (As_c.*fsc + k1.*(0.8*fcud).*Ac) );
 end
 
 return
