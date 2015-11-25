@@ -125,8 +125,13 @@ tmp = (2-widthFrpMM./(sFrpMM.*sin(beta)))./(1+widthFrpMM./(sFrpMM.*sin(beta)));
 tmp( tmp<0 ) = 0;
 kb = sqrt(tmp);
 kb(kb<1) = 1.0;
-
-kk = 0.17; kc = 1.0;
+switch FLAG
+    case 'MODEL_ERROR'
+        kk = 0.25; kc = 2.0;
+    case 'DESIGN_VALUE'
+        kk = 0.17; kc = 1.5;
+    otherwise
+end
 edeb = kc*(kk./gammaBond).*kb.*betaL.*sqrt(2*fcm.^(2/3.0)./(EFrpMPA.*tFrpMM));
 roFrp = (2*tFrpMM./bBeamMM).*(widthFrpMM./sFrpMM);
 efu = (fFrpMPA./gammaFrp)./(EFrpMPA./gammaEfrp);

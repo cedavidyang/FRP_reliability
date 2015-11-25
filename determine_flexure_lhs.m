@@ -5,7 +5,7 @@ RO_CYLINDE_2_CUBE = 0.8;
 % load data
 load tmpdata
 
-nRv = 9;
+nRv = 7;
 cdfs = lhsdesign(nSim, nRv);
 
 %% generate random properties with Rosenblueth's 2K+1 point estimate method
@@ -41,21 +41,26 @@ switch DESIGN_CODE
     case {'HK', 'hk'}
         fctMean = 0.5*sqrt(fcMean);
         fctStd = fctMean * FCT_COV;
-        rv6 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
-        fctSmp = rv6.icdf(cdfs(:,6));
+        rv5 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
+        fctSmp = rv5.icdf(cdfs(:,5));
     case {'GB', 'gb'}
         fcuMean = fcMean / RO_CYLINDE_2_CUBE;
         fctMean = 0.395 .* fcuMean.^0.55;
         fctStd = fctMean * FCT_COV;
         fctMeanNoBrittleFactor = fctMean;
         fctStdNoBrittleFactor = fctStd;
-        rv7 = makedist('norm', 'mu', fctMeanNoBrittleFactor, 'sigma', fctStdNoBrittleFactor);
-        fctSmpNoBrittleFactor = rv7.icdf(cdfs(:,7));   
+        rv5 = makedist('norm', 'mu', fctMeanNoBrittleFactor, 'sigma', fctStdNoBrittleFactor);
+        fctSmpNoBrittleFactor = rv5.icdf(cdfs(:,5));   
     case {'TR', 'tr'}
         fctMean = 0.3*(fcMean-8).^(2/3);
         fctStd = fctMean * FCT_COV;
-        rv6 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
-        fctSmp = rv6.icdf(cdfs(:,6));        
+        rv5 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
+        fctSmp = rv5.icdf(cdfs(:,5));
+    case {'FIB', 'fib'}
+        fctMean = 0.3*(fcMean-8).^(2/3);
+        fctStd = fctMean * FCT_COV;
+        rv5 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
+        fctSmp = rv5.icdf(cdfs(:,5));          
     otherwise
 end
 
@@ -63,13 +68,13 @@ fsMean = FS_DESIGN_ARRAY_MPA(iDesignCase) * FS_BIAS;
 fsStd = fsMean * FS_COV;
 fsLogStd = sqrt( log( FS_COV^2 + 1 ) );
 fsLogMean = log( fsMean ) - .5*fsLogStd.^2;
-rv8 = makedist('lognormal', 'mu', fsLogMean, 'sigma', fsLogStd);
-fsSmp = rv8.icdf(cdfs(:,8));
+rv6 = makedist('lognormal', 'mu', fsLogMean, 'sigma', fsLogStd);
+fsSmp = rv6.icdf(cdfs(:,6));
 
 areaSteelMean = AREA_STEEL_DESIGN_ARRAY_MM2(iDesignCase) * AS_BIAS;
 areaSteelStd = areaSteelMean * AS_COV;
-rv9 = makedist('norm', 'mu', areaSteelMean, 'sigma', areaSteelStd);
-areaSteelSmp = rv9.icdf(cdfs(:,9));
+rv7 = makedist('norm', 'mu', areaSteelMean, 'sigma', areaSteelStd);
+areaSteelSmp = rv7.icdf(cdfs(:,7));
 
 switch DESIGN_CODE
     case {'aci' 'ACI'}
@@ -80,6 +85,8 @@ switch DESIGN_CODE
         resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
     case {'TR' 'tr'}
         resistSmp = flexure_total_TR_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp); 
+    case {'FIB' 'fib'}
+        resistSmp = flexure_total_fib_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);         
     otherwise
 end
 

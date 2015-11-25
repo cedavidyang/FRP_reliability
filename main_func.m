@@ -1,6 +1,7 @@
 % main_shear
 % main function for time-invariant reliability analysis
 clear; %clc;
+rng(1); % repeatability
 cov_interval = 0.01;
 running_type = input(strcat('type of running: 1 for shear+side, 2 for shear+U,',...
 '3 for shear+W, 4 for flexure+IC,\n 5 for flexure+rupture, 6 for 1-3,', ...
