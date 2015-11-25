@@ -392,7 +392,7 @@ for ischeme=ischeme_start:ischeme_end
                 fccov_start fccov_end get_bias FACTOR_FRP TARGET_INDEX ...
                 N_MC re_data
             
-            matlabpool 6
+            pool = parpool(6);
             parfor iDesignCase = 1:N_DESIGN_CASE
 %             for iDesignCase = 1:N_DESIGN_CASE    
                 switch SUB_TEST_DATABASE_NAME
@@ -437,7 +437,7 @@ for ischeme=ischeme_start:ischeme_end
                 end
                 reliabilityResults(iDesignCase, :, :) = tmpBetaArray;
             end
-            matlabpool close
+            delete(pool)
 
             delete tmpdata.mat
 
