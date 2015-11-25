@@ -29,7 +29,9 @@ s2d = ext_data.S2D_DESIGN_ARRAY(iDesignCase)*ones(nCase, 1);
 % Concrete properties
 fcMPA = fcSmp;
 fckMPA = fcMPA-8; fckMPA(fckMPA<0)=0;
-fctMPA = fctSmp;
+fctMPA = 0.3 .* fckMPA.^(2/3.0);
+fcm = fcMPA;
+fctm = fctMPA;
 % steel properties
 fsMPA = fsSmp;
 sdMM = ext_data.SD_DESIGN_ARRAY_MM(iDesignCase)*ones(nCase, 1);
@@ -59,6 +61,7 @@ v1 = 0.6*(1-fckMPA/250);
 zt = dFrpTopMM;
 zb = (dBeamMM-(hBeamMM-dFrpMM))-TOP_DUMMY_HEIGHT*dBeamMM;
 hFrpEff = zb-zt;
+beta = betaFrpDEG/180*pi;
 
 %% FRP contribution (independent from theta)
 isSide = (frpForm == 1);
@@ -67,10 +70,9 @@ isW = (frpForm == 3);
 
 ns = zeros(nCase, 1); ns(isU) = 1; ns(isSide) = 2;
 Efd = EFrpMPA/gammaEfrp;
-ltmax = 0.7*sqrt( Efd.*tFrpMM)./sqrtFctSmp;
-beta = betaFrpDEG/180*pi;
+ltmax = 0.7*sqrt( Efd.*tFrpMM./fctm); ltmax(fctm==0) = hFrpEff(fctm==0)./sin(beta(fctm==0));
 epf1 = 0.5*(fFrpMPA/gammaFrp)./Efd;
-epf2 = 0.5*sqrtFctSmp./sqrt(Efd.*tFrpMM) / (gammaBond);
+epf2 = 0.5*sqrt(fctm./(Efd.*tFrpMM)) / (gammaBond);
 epf3 = epf1;
 covEp = std(epf1) / mean(epf1);
 epf3( epf3>0.004 ) = normrnd(0.004, 0.004*covEp, sum(epf3>0.004), 1);
