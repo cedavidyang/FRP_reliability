@@ -74,7 +74,7 @@ switch lower(design_code)
         psi_f = 1.00;
         FACTOR_FRP = (0.10:0.05:2.00)';
         TARGET_INDEX = 3.5;
-    case {'hk', 'tr'}
+    case {'hk', 'tr', 'fib'}
         psi_f = (0.10:0.05:2.00)';
         FACTOR_FRP = 1.00;
         TARGET_INDEX = 3.8;
@@ -172,9 +172,22 @@ for ischeme=ischeme_start:ischeme_end
                     if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
                         [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_TR('MODEL_ERROR', 1);
                         resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_TR('MODEL_ERROR', 1.00);
+                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
                     else
                         disp('[main_function]: unknown resistance');
-                    end   
+                    end
+                case {'FIB', 'fib'}
+                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                        [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_fib('MODEL_ERROR', 1);
+                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_fib('MODEL_ERROR', 1.00);
+                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                    else
+                        disp('[main_function]: unknown resistance');
+                    end                    
                 case {'ACInew', 'acinew'}
                     if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
                         [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_ACInew('MODEL_ERROR', 1);
@@ -188,9 +201,15 @@ for ischeme=ischeme_start:ischeme_end
 
             modelError = resistanceFromTest ./ resistanceFromPrediction;
             paramModelError = lognfit(modelError, ALPHA_MODEL_ERROR);
-
+            if ipsi == 1
+                beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
+                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '_fccov', num2str(fccov), '.mat'),...
+                    'modelError', 'resistanceFromTest', 'resistanceFromPrediction',...
+                    'failModeFromPrediction');
+            end
+            
             % postprocessing_model_error;
-            delete 'tmpdata.mat'
+            delete 'tmpdata.mat'; pause(3)
 
             %% Establish design cases
             switch SUB_TEST_DATABASE_NAME
@@ -275,11 +294,42 @@ for ischeme=ischeme_start:ischeme_end
                             case {'shear+side', 'shear+U'}
                                 [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
                                     roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_TR('DESIGN_VALUE',...
-                                    [1.40; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
                             case {'shear+W'}
                                 [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
                                     roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_TR('DESIGN_VALUE',...
-                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);                    
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);
+                            case {'flexure+IC', 'flexure+ic'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_TR('DESIGN_VALUE',...
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                            case {'flexure+rup', 'flexure+rupture'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_TR('DESIGN_VALUE',...
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);
+                            otherwise
+                                disp('[main_function]: unknown resistance');
+                        end
+                    end                                  
+                case {'FIB', 'fib'}
+                    for iFactorFrp = 1:nFactorFrp
+                        switch SUB_TEST_DATABASE_NAME
+                            case {'shear+side', 'shear+U'}
+                                [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
+                                    roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_fib('DESIGN_VALUE',...
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                            case {'shear+W'}
+                                [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
+                                    roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_fib('DESIGN_VALUE',...
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);                                  
+                            case {'flexure+IC', 'flexure+ic'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_fib('DESIGN_VALUE',...
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                            case {'flexure+rup', 'flexure+rupture'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_fib('DESIGN_VALUE',...
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);
                             otherwise
                                 disp('[main_function]: unknown resistance');
                         end
@@ -330,10 +380,6 @@ for ischeme=ischeme_start:ischeme_end
                     modelErrorMean = mean(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2));
                     modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2)); 
                 otherwise
-            end
-            if ipsi == 1
-                beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
-                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '_fccov', num2str(fccov), '.mat'), 'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
             end
             clearvars -except N_DESIGN_CASE N_MC LOAD_RATIO LOAD_FACTOR LIVE_BIAS LIVE_COV ...
                 DEAD_BIAS DEAD_COV SUB_TEST_DATABASE_NAME nFactorFrp nLoadRatio reliabilityResults ...
