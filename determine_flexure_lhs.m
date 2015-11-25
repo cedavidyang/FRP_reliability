@@ -51,6 +51,11 @@ switch DESIGN_CODE
         fctStdNoBrittleFactor = fctStd;
         rv7 = makedist('norm', 'mu', fctMeanNoBrittleFactor, 'sigma', fctStdNoBrittleFactor);
         fctSmpNoBrittleFactor = rv7.icdf(cdfs(:,7));   
+    case {'TR', 'tr'}
+        fctMean = 0.3*(fcMean-8).^(2/3);
+        fctStd = fctMean * FCT_COV;
+        rv6 = makedist('norm', 'mu', fctMean, 'sigma', fctStd);
+        fctSmp = rv6.icdf(cdfs(:,6));        
     otherwise
 end
 
@@ -73,6 +78,8 @@ switch DESIGN_CODE
         resistSmp = flexure_total_HK_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);      
     case{'GB' 'gb'}
         resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
+    case {'TR' 'tr'}
+        resistSmp = flexure_total_TR_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp); 
     otherwise
 end
 
