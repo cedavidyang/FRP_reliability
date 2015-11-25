@@ -193,31 +193,6 @@ for iCase = 1:nCase
     if iC > MAX_INITIAL_GUESS
         fprintf('Failed convergence at %d, exitflag = %d, c=%.2f\n', iCase, exitflag(iCase), c(iCase))
     end
-%% other approaches
-%     if dCmpMM(iCase) > 0.5 * beta1(iCase) * c(iCase)
-%         % Approach 1: neglect compressive steel and assume c = 2d_c
-% %        areaSteelCmpMM2(iCase) = 0;
-% %        c = 2*dCmpMM(iCase)./beta1(iCase);
-%         % Approach 2: neglect compressive steel and determine c again
-% %         for iC = 1:10
-% %             % assuming no compressive steel
-% %             [c, fval, exitflag] = fsolve( @(c) force_balance(alpha1(i), beta1(i), EsMPA(i), EsCmpMPA(i), EfrpMPA(i),...
-% %                 e_bi, eConcUlti(i), eFrpCritical(i), bBeamMM(i), bFlangeMM(i), tFlangeMM(i), dBeamMM(i), dCmpMM(i),...
-% %                 hBeamMM(i), c, fsMPA(i), fsCmpMPA(i), fcMPA(i), areaSteelMM2(i), areaFrpMM2(i), 0),...
-% %                 cIni(iC), optimset('Display','off'));
-% %             x(i, 1) = c; x(i, 2) = exitflag;
-% %             if exitflag == 1 || abs(fval)<=1e-5
-% %                 break
-% %             end
-% %         end
-%        % Approach 3: consider the effects of compressive steel --- Do nothing
-% %       disp('Compressive rebar is too deep')
-%     end
-%     % uncomment if approach 2 is used
-% %     if iC == 11
-% %         fprintf('Failed convergence at %d, exitflag = %d, c=%.2f\n', i, exitflag, c)
-% %     end 
-%     x(iCase, 1) = c; x(iCase, 2) = exitflag;
 end
 [ffe, eFrpEff, failMode] = FRP_stress(EfrpMPA, eConcUlti, hBeamMM, c, eFrpIni, eFrpCritical, failMode);
 [fs, es, isSteelYielding] = tension_steel(EsMPA, eFrpEff, eFrpIni, dBeamMM, hBeamMM, c, (fsMPA/gammaSteel), isSteelYielding);
@@ -228,9 +203,6 @@ switch FLAG
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );    
     case {'DESIGN_VALUE'}
         phi = 1;
-%         psi_f = psi_f*ones(nCase,1);
-%         psi_f((~isRupture)&(~isAnchor)) = 0.90;
-%         psi_f(isRupture|isAnchor) = 0.50;
         momentTotalKNM = 1e-6 * phi .* ( areaSteelMM2.*fs.*(dBeamMM-0.5*beta1.*c) + areaFrpMM2.*ffe.*(hBeamMM-0.5*beta1.*c) + (0.5*beta1.*c-dCmpMM).*areaSteelCmpMM2.*fsc );  
     otherwise
 end
@@ -248,9 +220,6 @@ cr = c.*beta1; %relative depth of neutral axis
 [ffe, e_fe, ~] = FRP_stress(Efrp, e_cu, df, c, e_ini, e_fd, tmp);
 [fs, ~] = tension_steel(Es, e_fe, e_ini, d, df, c, fyd, tmp);
 
-% e_cf = (e_fe + e_ini ) .* c ./ (hBeamMM-c); 
-% w = ones(nCase, 1);
-% w( e_cf<e_cu ) = 0.5 + 0.5 * e_fe(e_cf<e_cu) ./ e_fd(e_cf<e_cu);
 w = 0.5 + 0.5 * e_fe ./ e_fd;
 
 fsc = comp_steel(e_co, e_cu, Es_c, e_fe, e_ini, d_c, df, c, fy_cd);
