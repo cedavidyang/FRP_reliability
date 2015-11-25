@@ -239,8 +239,8 @@ switch DESIGN_CODE
         LOAD_FACTOR = [1.4; 1.6];
     case {'GB', 'gb'}
         LOAD_FACTOR = [1.2; 1.4];
-    case {'TR', 'tr'}
-        LOAD_FACTOR = [1.35; 1.5];  
+    case {'TR', 'tr', 'FIB', 'fib'}
+        LOAD_FACTOR = [1.35; 1.5];      
     case {'ACInew', 'acinew'}
         LOAD_FACTOR = [1.4; 1.7];    %PHI=0.85
 %         LOAD_FACTOR = [1.2; 1.6];    %PHI=0.75        
