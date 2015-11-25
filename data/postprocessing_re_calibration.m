@@ -11,7 +11,7 @@ switch lower(code)
         beta_T_50 = 3.8;
     case {'gb'}
         psi_f = (0.10:0.05:2.00)';
-        beta_T_50 = 3.2;    
+        beta_T_50 = 3.7;    
     otherwise
 end
 fc_type = input('fc type: 1 for fcdet, 2 for 125 bias, 3 for cov10\n');
@@ -32,13 +32,13 @@ switch fail_mode
         struct_ic = load(strcat(code, '_', 'flexure', '+IC_', fc, num2str(fccov), '.mat'));
         data_struct_array = {struct_s, struct_u, struct_ic}';
         lgd = {'Side bonding', 'U-jacketing', 'IC debonding'};
-        xbound = [0.4, 2.2];
+        xbound = [0.1, 1.0];
     case 2
         struct_w = load(strcat(code, '_', 'shear', '+W_', fc, num2str(fccov), '.mat'));
         struct_rup = load(strcat(code, '_', 'flexure', '+rupture_', fc, num2str(fccov), '.mat'));
         data_struct_array = {struct_w, struct_rup}';
         lgd = {'Complete wrapping', 'FRP rupture'};
-        xbound = [0.9, 3.2];
+        xbound = [0.5, 1.5];
 end
 
 %% debonding failure

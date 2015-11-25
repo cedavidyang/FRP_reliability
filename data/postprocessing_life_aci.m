@@ -54,7 +54,7 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-           
+
             h1 = plot(axs{end}, life, squeeze(psi_array(ifig, 1, :)),...
                 'o-', 'Color', 'b', 'LineWidth', 1, 'MarkerFace', 'b', 'MarkerEdge', 'b', 'MarkerSize', 4);
             h2 = plot(axs{end}, life, squeeze(psi_array(ifig, 2, :)),...

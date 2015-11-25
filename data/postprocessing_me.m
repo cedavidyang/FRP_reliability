@@ -32,14 +32,14 @@ switch lower(DESIGN_CODE)
         psi_f = 1.00;
         FACTOR_FRP = (0.50:0.05:1.00)';
         TARGET_INDEX = 3.5;
-    case {'hk', 'tr'}
+    case {'hk', 'tr', 'fib'}
         psi_f = 0.5:0.05:1.00;
         FACTOR_FRP = (1.00:0.05:2.00)';
         TARGET_INDEX = 3.8;
     case {'gb'}
         psi_f = 0.5:0.05:1.00;
         FACTOR_FRP = (1.00:0.05:2.00)';
-        TARGET_INDEX = 3.2;        
+        TARGET_INDEX = 3.2;
 end
 
 FC_COV = fccov;
@@ -50,11 +50,16 @@ run('../preprocessing.m')
 
 switch running_type
     case {1, 2, 3}
-        load(strcat('me_', DESIGN_CODE, '_', 'shear'));
+        load(strcat('me_', DESIGN_CODE, '_', 'shear_fccov0.1.mat'));
         indx = FRP_FORM_TEST_ARRAY==FRP_FORM_DESIGN;
     case {4,5}
-        load(strcat('me_', DESIGN_CODE, '_', 'flexure'));
-        indx = FAIL_MODE_TEST_ARRAY == running_type-3;
+        load(strcat('me_', DESIGN_CODE, '_', 'flexure_fccov0.1.mat'));
+        indx = (FAIL_MODE_TEST_ARRAY == running_type-3);
+%         if strcmpi(DESIGN_CODE, 'tr')
+%             indx = (FAIL_MODE_TEST_ARRAY == running_type-3)&(~failModeFromPrediction);
+%         else
+%             indx = (FAIL_MODE_TEST_ARRAY == running_type-3);
+%         end
     otherwise
         fprintf('illegal running type');
         break;
@@ -66,16 +71,17 @@ axes1 = axes('Parent',figure1,'FontSize',8,'FontName','Times New Roman');
 box(axes1,'on');
 hold(axes1,'all');
 
-h1 = plot(axes1, resistanceFromPrediction(indx), resistanceFromTest(indx), 'k.');
+h1 = plot(axes1, resistanceFromPrediction(indx), resistanceFromTest(indx), 'b.');
 xlim(axes1, [0, 1200]);
-h = refline(1, 0); set(h, 'Color','k', 'LineStyle', '-');
+h = refline(1, 0); set(h, 'Color','r', 'LineStyle', '-');
+set(h, 'Linewidth', 1.0);
 opts = fitoptions( 'Method', 'LinearLeastSquares' );
 opts.Lower = [-Inf 0];
 opts.Upper = [Inf 0];
 [cf, stats] = fit(resistanceFromPrediction(indx), resistanceFromTest(indx), 'poly1', opts);
-h = refline(cf.p1, cf.p2); set(h, 'Color','k', 'LineStyle', '--');
-xtxt1 = xlabel('Predicted shear capacity, $V_{pre}$ (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'latex');
-ytxt1 = ylabel('Test result $V_{exp}$ (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'latex');
+h = refline(cf.p1, cf.p2); set(h, 'Color', [0, 0.5, 0], 'LineStyle', '--');
+xtxt1 = xlabel('Predicted shear capacity, V_{pre} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+ytxt1 = ylabel('Test result, V_{exp} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
 ylim(axes1, [0, 1200]);
 
 %% PDF plot and distribution fitting
@@ -96,9 +102,9 @@ Bin_.rule = 1;
 [C_,E_] = dfswitchyard('dfhistbins',modelerror,[],[],Bin_,F_,X_);
 [N_,C_] = ecdfhist(F_,X_,'edges',E_); % empirical pdf from cdf
 h_ = bar(axes2, C_,N_,'hist');
-set(h_,'FaceColor','none','EdgeColor','k','LineStyle','-', 'LineWidth',0.5);
-xtxt2 = xlabel('Model error', 'FontSize',8,'FontName','Times New Roman', 'interpreter', 'latex');
-ytxt2 = ylabel('Probablity density', 'FontSize',8,'FontName','Times New Roman', 'interpreter', 'latex');
+set(h_,'FaceColor','none','EdgeColor',[0.75, 0, 0.75],'LineStyle','-', 'LineWidth',0.5);
+xtxt2 = xlabel('Model error', 'FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+ytxt2 = ylabel('Probablity density', 'FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
 legh_(end+1) = h_; legt_{end+1} = 'Model error';
 % Nudge axis limits beyond data limits
 xlim_ = get(axes2,'XLim');
@@ -114,7 +120,7 @@ Data_ = modelerror(t_);
 fprintf('------- Create fit "Normal" -------\n')
 [param_norm(1), param_norm(2)] = normfit(Data_, 0.05);
 y_ = normpdf(x_,param_norm(1), param_norm(2));
-h_ = plot(x_,y_,'Color', 'k', 'LineStyle','-.', 'LineWidth',1, 'Marker','none', 'MarkerSize',4);
+h_ = plot(x_,y_,'Color', [0, 0.5, 0], 'LineStyle','-.', 'LineWidth',1.5, 'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
 legt_{end+1} = 'Normal';
 
@@ -122,7 +128,7 @@ legt_{end+1} = 'Normal';
 fprintf('------- Create fit "Lognormal" -------\n')
 param_log = lognfit(Data_, 0.05);
 y_ = lognpdf(x_,param_log(1),param_log(2));
-h_ = plot(x_,y_,'Color','k', 'LineStyle','-', 'LineWidth',1,'Marker','none', 'MarkerSize',4);
+h_ = plot(x_,y_,'Color','b', 'LineStyle','-', 'LineWidth',1.5,'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
 legt_{end+1} = 'Lognormal';
 
@@ -130,12 +136,12 @@ legt_{end+1} = 'Lognormal';
 fprintf('------- Create fit "Gumbel(max)" -------\n')
 param_gbl = evfit(-Data_, 0.05); % since MATLAB extreme value distribution is for minimum, use negative
 y_ = evpdf(-x_,param_gbl(1), param_gbl(2));
-h_ = plot(x_,y_,'Color','k','LineStyle','--', 'LineWidth',1,'Marker','none', 'MarkerSize',4);
+h_ = plot(x_,y_,'Color','r','LineStyle','--', 'LineWidth',1.5,'Marker','none', 'MarkerSize',4);
 legh_(end+1) = h_;
 legt_{end+1} = 'Gumbel';
 
 leginfo_ = {'Orientation', 'vertical', 'Location', 'NorthEast'}; 
-h_ = legend(axes2,legh_,legt_,leginfo_{:}, 'FontSize',8,'FontName','Times New Roman', 'Interpreter', 'latex');  % create legend
+h_ = legend(axes2,legh_,legt_,leginfo_{:}, 'FontSize',8,'FontName','Times New Roman', 'Interpreter', 'tex');  % create legend
 
 % output fitting results and hypothesis testing
 test_cdf_norm = [Data_, normcdf(Data_, param_norm(1), param_norm(2))];
