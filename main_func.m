@@ -432,8 +432,6 @@ for ischeme=ischeme_start:ischeme_end
             end
             delete(pool)
 
-            delete tmpdata.mat
-
             % save data
             if fc_type ~=4 || psi_f(ipsi) == 1
                 re_data{end+1} = reliabilityResults;
@@ -445,6 +443,8 @@ for ischeme=ischeme_start:ischeme_end
         if fc_type ~=4 
             save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), num2str(fccov), '.mat'));
         end
+        
+        delete tmpdata.mat
     end
     if fc_type == 4
         save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_fccov.mat'));
