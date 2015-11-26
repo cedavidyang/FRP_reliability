@@ -93,142 +93,135 @@ for ischeme=ischeme_start:ischeme_end
         if fc_type ~=4
             re_data = {};
         end
-        for ipsi = 1:length(psi_f)
-            DESIGN_CODE = lower(design_code);
-            % material
-            FC_COV = fccov;
-            FC_BIAS = get_bias(FC_COV);
-            FCT_COV = fccov;
-            FCT_BIAS = get_bias(FCT_COV);
-            switch ischeme
-                case 1
-                    user_input;
-                    SUB_TEST_DATABASE_NAME ='shear+side';
-                    % reliability
-                    N_MC = 1e4;
-                case 2
-                    user_input;
-                    SUB_TEST_DATABASE_NAME ='shear+U';
-                    % reliability
-                    N_MC = 1e4;
-                case 3
-                    user_input;
-                    SUB_TEST_DATABASE_NAME ='shear+W';
-                    % reliability
-                    N_MC = 1e4;
-                case 4
-                    user_input;
-                    SUB_TEST_DATABASE_NAME ='flexure+IC';
-                    % reliability
-                    N_MC = 500;
-                case 5
-                    user_input_rupture;
-                    SUB_TEST_DATABASE_NAME ='flexure+rupture';
-                    % reliability
-                    N_MC = 500;
-                otherwise
-                    fprintf('illegal running type');
-            end
-            preprocessing;
-%             clearvars -except *TEST* *BIAS* *MEAN* *COV* *STD* cov_interval ...
-%                 running_type fc_type design_code ischeme_start ischeme_end ...
-%                 fccov_start fccov_end get_bias psi_f FACTOR_FRP TARGET_INDEX ...
-%                 DESIGN_CODE FC_COV FC_BIAS FCT_COV FCT_BIAS SUB_TEST_DATABASE_NAME ...
-%                 N_MC
-            save('tmpdata.mat', '*TEST*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
 
-            %% Model error analysis
-            switch DESIGN_CODE
-                case {'ACI' 'aci'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, le_warning, ~] = shear_total_ACI('MODEL_ERROR', 1.00);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
-                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_ACI('MODEL_ERROR', 1.00);
-                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end
-                case {'hk', 'HK'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, ~] = shear_total_HK('MODEL_ERROR', 1.00);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
-                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_HK('MODEL_ERROR', 1.00);
-                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end  
-                case {'GB', 'gb'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, ro, shearReinforceKN] = shear_total_GB('MODEL_ERROR', 1);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
-                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_GB('MODEL_ERROR', 1.00);
-                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end
-                case {'TR', 'tr'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_TR('MODEL_ERROR', 1);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
-                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_TR('MODEL_ERROR', 1.00);
-                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end
-                case {'FIB', 'fib'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_fib('MODEL_ERROR', 1);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
-                        [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_fib('MODEL_ERROR', 1.00);
-                        resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end                    
-                case {'ACInew', 'acinew'}
-                    if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
-                        [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_ACInew('MODEL_ERROR', 1);
-                        resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
-                    else
-                        disp('[main_function]: unknown resistance');
-                    end          
-                otherwise
-                    disp('[main_function]: unknown guidelines');
-            end
+        DESIGN_CODE = lower(design_code);
+        % material
+        FC_COV = fccov;
+        FC_BIAS = get_bias(FC_COV);
+        FCT_COV = fccov;
+        FCT_BIAS = get_bias(FCT_COV);
+        switch ischeme
+            case 1
+                user_input;
+                SUB_TEST_DATABASE_NAME ='shear+side';
+                % reliability
+                N_MC = 1e4;
+            case 2
+                user_input;
+                SUB_TEST_DATABASE_NAME ='shear+U';
+                % reliability
+                N_MC = 1e4;
+            case 3
+                user_input;
+                SUB_TEST_DATABASE_NAME ='shear+W';
+                % reliability
+                N_MC = 1e4;
+            case 4
+                user_input;
+                SUB_TEST_DATABASE_NAME ='flexure+IC';
+                % reliability
+                N_MC = 500;
+            case 5
+                user_input_rupture;
+                SUB_TEST_DATABASE_NAME ='flexure+rupture';
+                % reliability
+                N_MC = 500;
+            otherwise
+                fprintf('illegal running type');
+        end
+        preprocessing;
+        save('tmpdata.mat', '*TEST*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
+        
+        %% Model error analysis
+        switch DESIGN_CODE
+            case {'ACI' 'aci'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, le_warning, ~] = shear_total_ACI('MODEL_ERROR', 1.00);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_ACI('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'hk', 'HK'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, ~] = shear_total_HK('MODEL_ERROR', 1.00);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_HK('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'GB', 'gb'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, ro, shearReinforceKN] = shear_total_GB('MODEL_ERROR', 1);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_GB('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'TR', 'tr'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_TR('MODEL_ERROR', 1);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_TR('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'FIB', 'fib'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_fib('MODEL_ERROR', 1);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_fib('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'ACInew', 'acinew'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, yield_warning, shearReinforceKN] = shear_total_ACInew('MODEL_ERROR', 1);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            otherwise
+                disp('[main_function]: unknown guidelines');
+        end
+        
+        modelError = resistanceFromTest ./ resistanceFromPrediction;
+        paramModelError = lognfit(modelError, ALPHA_MODEL_ERROR);
 
-            modelError = resistanceFromTest ./ resistanceFromPrediction;
-            paramModelError = lognfit(modelError, ALPHA_MODEL_ERROR);
-            if ipsi == 1
-                beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
-                save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '_fccov', num2str(fccov), '.mat'),...
-                    'modelError', 'resistanceFromTest', 'resistanceFromPrediction',...
-                    'failModeFromPrediction');
-            end
+        beam_resistance = strtok(SUB_TEST_DATABASE_NAME, '+');
+        save(strcat('./data/', 'me_', DESIGN_CODE, '_', beam_resistance, '_fccov', num2str(fccov), '.mat'),...
+            'modelError', 'resistanceFromTest', 'resistanceFromPrediction');
+
+        delete 'tmpdata.mat'; pause(3)
+        
+        %% Establish design cases
+        switch SUB_TEST_DATABASE_NAME
+            case {'shear+side', 'shear+U', 'shear+W'}
+                shear_construct_design_case;
+            case {'flexure+IC', 'flexure+ic', 'flexure+rup', 'flexure+rupture'}
+                flexure_construct_design_case;
+            otherwise
+        end
+        save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
+        nFactorFrp = length(FACTOR_FRP);
+        resistanceDesign = zeros(N_DESIGN_CASE, nFactorFrp);
+        isOverReinforce = zeros(N_DESIGN_CASE, nFactorFrp);
+        roSteel = zeros(N_DESIGN_CASE, nFactorFrp);
+        resistReinforce = zeros(N_DESIGN_CASE, nFactorFrp);
+        failMode = zeros(N_DESIGN_CASE, nFactorFrp);
+        isSteelYielding = zeros(N_DESIGN_CASE, nFactorFrp);
             
-            % postprocessing_model_error;
-            delete 'tmpdata.mat'; pause(3)
-
-            %% Establish design cases
-            switch SUB_TEST_DATABASE_NAME
-                case {'shear+side', 'shear+U', 'shear+W'}
-                    shear_construct_design_case;
-                case {'flexure+IC', 'flexure+ic', 'flexure+rup', 'flexure+rupture'}
-                    flexure_construct_design_case;
-                otherwise
-            end
-            save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
-            nFactorFrp = length(FACTOR_FRP);
-            resistanceDesign = zeros(N_DESIGN_CASE, nFactorFrp);
-            isOverReinforce = zeros(N_DESIGN_CASE, nFactorFrp);
-            roSteel = zeros(N_DESIGN_CASE, nFactorFrp);
-            resistReinforce = zeros(N_DESIGN_CASE, nFactorFrp);
-            failMode = zeros(N_DESIGN_CASE, nFactorFrp);
-            isSteelYielding = zeros(N_DESIGN_CASE, nFactorFrp);
-
+        for ipsi = 1:length(psi_f)
             switch DESIGN_CODE
                 case {'ACI' 'aci'}
                     for iFactorFrp = 1:nFactorFrp
@@ -412,7 +405,7 @@ for ischeme=ischeme_start:ischeme_end
                         % determine load
                         s = resistanceDesign(iDesignCase, jFactorFrp);
                         ld = LOAD_RATIO(kLoadRatio);
-                        liveNorm = ld*s/(LOAD_FACTOR(1)+LOAD_FACTOR(2)*ld);
+                        liveNorm = ld*s/(ld(1)+LOAD_FACTOR(2)*ld);
                         liveMean = liveNorm * LIVE_BIAS;
                         liveStd = liveMean * LIVE_COV;
                         deadNorm = s/(LOAD_FACTOR(1)+LOAD_FACTOR(2)*ld);
@@ -447,30 +440,7 @@ for ischeme=ischeme_start:ischeme_end
             else
                 continue
             end
-            
-%             norm_RE = zeros(nFactorFrp,1);
-%             mean_RE = zeros(nFactorFrp,1);
-%             std_RE = zeros(nFactorFrp,1);
-%             upper_RE = zeros(nFactorFrp,1);
-%             lower_RE = zeros(nFactorFrp,1);
-%             for i_factor = 1:nFactorFrp
-%                 RE_col = reliabilityResults(:, i_factor, :);
-%                 RE_col = RE_col(:);
-%                 RE_col( isnan(RE_col) ) = [];
-% 
-%                 norm_RE(i_factor) = mean((RE_col-TARGET_INDEX).^2);
-%                 mean_RE(i_factor) = mean(RE_col);
-%                 std_RE(i_factor) = std(RE_col);
-%                 upper_RE(i_factor) = max(RE_col);
-%                 lower_RE(i_factor) = min(RE_col);
-%             end
-            % save(strcat('./figures4_3D/', DESIGN_CODE, '_', SUB_TEST_DATABASE_NAME, num2str(psi_f(ipsi)), '.mat'), 'norm_RE', 'mean_RE', 'std_RE','upper_RE', 'lower_RE');            
-            % save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), '_', num2str(fccov), '_psi', num2str(psi_f(ipsi)), '.mat'));
-            % save(strcat('./data/', 'data_', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', num2str(fccov), '.mat'), 'fccov', 'mean_RE');
 
-            % postprocessing_reliability
-            % delete tmpUsefulVariables.mat
-            % delete tmpAllVariables.mat
         end
         if fc_type ~=4 
             save(strcat('./data/', lower(DESIGN_CODE), '_', SUB_TEST_DATABASE_NAME, '_', fc_name(fccov), num2str(fccov), '.mat'));
