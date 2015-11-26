@@ -83,13 +83,14 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1, 'MarkerFace', 'k', 'MarkerEdge', 'k', 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1, 'MarkerFace', 'b', 'MarkerEdge', 'b', 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1, 'MarkerFace', 'r', 'MarkerEdge', 'r', 'MarkerSize', 4);
+            h1 = plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1, 'MarkerFace', 'k', 'MarkerEdge', 'k', 'MarkerSize', 4);
+            h2 = plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1, 'MarkerFace', 'b', 'MarkerEdge', 'b', 'MarkerSize', 4);
+            h3 = plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1, 'MarkerFace', 'r', 'MarkerEdge', 'r', 'MarkerSize', 4);
             xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
+            legend([h1, h2, h3], {'30 years', '40 years', '50 years'})
             
             switch code
                 case 'gb'
@@ -152,13 +153,14 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1.5, 'MarkerSize', 4);
+            h1 = plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1, 'MarkerFace', 'k', 'MarkerEdge', 'k', 'MarkerSize', 4);
+            h2 = plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1, 'MarkerFace', 'b', 'MarkerEdge', 'b', 'MarkerSize', 4);
+            h3 = plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1, 'MarkerFace', 'r', 'MarkerEdge', 'r', 'MarkerSize', 4);
             xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
+            legend([h1, h2, h3], {'30 years', '40 years', '50 years'})
             
             switch code
                 case 'gb'
