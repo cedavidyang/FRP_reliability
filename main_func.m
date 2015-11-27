@@ -383,11 +383,11 @@ for ischeme=ischeme_start:ischeme_end
                 cov_interval ...
                 running_type fc_type design_code ischeme_start ischeme_end ...
                 fccov_start fccov_end get_bias FACTOR_FRP TARGET_INDEX ...
-                N_MC re_data FAIL_MODE_TEST_ARRAY
+                N_MC re_data FAIL_MODE_TEST_ARRAY modelError
             
             pool = parpool(6);
             parfor iDesignCase = 1:N_DESIGN_CASE
-%             for iDesignCase = 1:N_DESIGN_CASE    
+%             for iDesignCase = 1:N_DESIGN_CASE   
                 switch SUB_TEST_DATABASE_NAME
                     case {'shear+side', 'shear+U', 'shear+W'}
                         [tmpResistMean, tmpResistStd, tmpResistSmp] = determine_shear(iDesignCase, N_MC);
