@@ -371,8 +371,10 @@ for ischeme=ischeme_start:ischeme_end
                     modelErrorMean = mean(modelError(FAIL_MODE_TEST_ARRAY == 1));
                     modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 1));
                 case {'flexure+rup', 'flexure+rupture'}
-                    modelErrorMean = mean(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2));
-                    modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2)); 
+%                     modelErrorMean = mean(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2));
+%                     modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 2 & failModeFromPrediction==2)); 
+                    modelErrorMean = mean(modelError(FAIL_MODE_TEST_ARRAY == 2));
+                    modelErrorStd = std(modelError(FAIL_MODE_TEST_ARRAY == 2)); 
                 otherwise
             end
             clearvars -except N_DESIGN_CASE N_MC LOAD_RATIO LOAD_FACTOR LIVE_BIAS LIVE_COV ...
