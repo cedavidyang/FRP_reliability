@@ -90,10 +90,6 @@ for ischeme=ischeme_start:ischeme_end
         re_data = {};
     end
     for fccov=fccov_start:cov_interval:fccov_end;
-        if fc_type ~=4
-            re_data = {};
-        end
-
         DESIGN_CODE = lower(design_code);
         % material
         FC_COV = fccov;
@@ -220,7 +216,11 @@ for ischeme=ischeme_start:ischeme_end
         resistReinforce = zeros(N_DESIGN_CASE, nFactorFrp);
         failMode = zeros(N_DESIGN_CASE, nFactorFrp);
         isSteelYielding = zeros(N_DESIGN_CASE, nFactorFrp);
-            
+
+        nLoadRatio = length(LOAD_RATIO);
+        if fc_type ~=4
+            re_data = zeros(length(psi_f), N_DESIGN_CASE, nFactorFrp, nLoadRatio);
+        end
         for ipsi = 1:length(psi_f)
             switch DESIGN_CODE
                 case {'ACI' 'aci'}
@@ -349,10 +349,9 @@ for ischeme=ischeme_start:ischeme_end
 %             save('tmpdata.mat', '*DESIGN*', '*BIAS*', '*MEAN*', '*COV*', '*STD*');
             %% Time-invariant reliability analysis
 
-            nLoadRatio = length(LOAD_RATIO);
+%             nLoadRatio = length(LOAD_RATIO);
             reliabilityResults = zeros(N_DESIGN_CASE, nFactorFrp, nLoadRatio);
             nReliabilityCase = N_DESIGN_CASE*nFactorFrp*nLoadRatio;
-
             resistMean = zeros(N_DESIGN_CASE, 1);
             resistStd = zeros(N_DESIGN_CASE, 1);
             resistSmp = zeros(N_MC, N_DESIGN_CASE);
@@ -436,7 +435,7 @@ for ischeme=ischeme_start:ischeme_end
 
             % save data
             if fc_type ~=4 || psi_f(ipsi) == 1
-                re_data{end+1} = reliabilityResults;
+                re_data(ipsi, :, :, :) = reliabilityResults;
             else
                 continue
             end
