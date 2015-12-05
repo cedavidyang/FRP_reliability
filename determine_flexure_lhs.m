@@ -50,7 +50,15 @@ switch DESIGN_CODE
         fctMeanNoBrittleFactor = fctMean;
         fctStdNoBrittleFactor = fctStd;
         rv5 = makedist('norm', 'mu', fctMeanNoBrittleFactor, 'sigma', fctStdNoBrittleFactor);
-        fctSmpNoBrittleFactor = rv5.icdf(cdfs(:,5));   
+        fctSmpNoBrittleFactor = rv5.icdf(cdfs(:,5));
+     case {'WU', 'wu'}
+        fcuMean = fcMean / RO_CYLINDE_2_CUBE;
+        fctMean = 0.395 .* fcuMean.^0.55;
+        fctStd = fctMean * FCT_COV;
+        fctMeanNoBrittleFactor = fctMean;
+        fctStdNoBrittleFactor = fctStd;
+        rv5 = makedist('norm', 'mu', fctMeanNoBrittleFactor, 'sigma', fctStdNoBrittleFactor);
+        fctSmpNoBrittleFactor = rv5.icdf(cdfs(:,5));         
     case {'TR', 'tr'}
         fctMean = 0.3*(fcMean-8).^(2/3);
         fctStd = fctMean * FCT_COV;
@@ -82,6 +90,8 @@ switch DESIGN_CODE
     case {'hk' 'HK'}
         resistSmp = flexure_total_HK_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);      
     case{'GB' 'gb'}
+        resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
+    case{'WU' 'wu'}
         resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
     case {'TR' 'tr'}
         resistSmp = flexure_total_TR_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp); 
