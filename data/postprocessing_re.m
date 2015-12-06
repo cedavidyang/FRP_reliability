@@ -11,7 +11,10 @@ switch lower(code)
         beta_T_50 = 3.8;
     case {'gb'}
         psi_f = (0.10:0.05:2.00)';
-        beta_T_50 = 3.2;    
+        beta_T_50 = 3.2;
+    case {'wu'}
+        psi_f = (0.10:0.05:2.00)';
+        beta_T_50 = 3.2;          
     otherwise
 end
 fc_type = input('fc type: 1 for fcdet, 2 for 125 bias, 3 for cov10\n');

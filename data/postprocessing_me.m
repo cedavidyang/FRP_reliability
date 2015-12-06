@@ -40,6 +40,10 @@ switch lower(DESIGN_CODE)
         psi_f = 0.5:0.05:1.00;
         FACTOR_FRP = (1.00:0.05:2.00)';
         TARGET_INDEX = 3.2;
+    case {'wu'}
+        psi_f = 0.5:0.05:1.00;
+        FACTOR_FRP = (1.00:0.05:2.00)';
+        TARGET_INDEX = 3.2;        
 end
 
 FC_COV = fccov;
