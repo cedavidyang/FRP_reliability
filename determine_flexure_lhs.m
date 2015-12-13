@@ -92,7 +92,7 @@ switch DESIGN_CODE
     case{'GB' 'gb'}
         resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
     case{'WU' 'wu'}
-        resistSmp = flexure_total_GB_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
+        resistSmp = flexure_total_WU_MC(iDesignCase, hSmp, fcSmp, fctSmpNoBrittleFactor, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp);   
     case {'TR' 'tr'}
         resistSmp = flexure_total_TR_MC(iDesignCase, hSmp, fcSmp, fctSmp, EFrpSmp, fFrpSmp, fsSmp, areaSteelSmp); 
     case {'FIB' 'fib'}

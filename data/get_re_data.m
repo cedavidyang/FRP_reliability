@@ -20,7 +20,8 @@ switch lower(code)
         end
     otherwise
         for ipsi = 1:npsi
-            re_smp = data_struct.re_data{ipsi}(:, 1, :);
+%             re_smp = data_struct.re_data{ipsi}(:, 1, :);
+            re_smp = data_struct.re_data(ipsi, :, :, :);
             re_smp = re_smp(:);
             re_smp( isnan(re_smp) ) = [];
             norm_RE_yr30(ipsi) = mean((re_smp-beta_T_30).^2);
