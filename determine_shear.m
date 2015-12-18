@@ -32,7 +32,7 @@ switch DESIGN_CODE
         sqrtFcMean = sqrt(fcMean);
         sqrrFcStd = sqrtFcMean * FCT_COV;
         sqrtFcSmp = normrnd(sqrtFcMean, sqrrFcStd, nSim, 1);
-    case {'GB', 'gb'}
+    case {'GB', 'gb', 'GBnew', 'gbnew'}
         fcuMean = fcMean / RO_CYLINDE_2_CUBE;
         fctMean = 0.395 .* fcuMean.^0.55;
         fctStd = fctMean * FCT_COV;
@@ -79,6 +79,8 @@ switch DESIGN_CODE
         resistSmp = shear_total_HK_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, sqrtFcSmp, fsSmp);
     case{'GB' 'gb'}
         resistSmp = shear_total_GB_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, fctSmpNoBrittleFactor, fsSmp);
+    case{'GBnew' 'gbnew'}
+        resistSmp = shear_total_GBnew_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, fctSmpNoBrittleFactor, fsSmp);    
     case{'TR' 'tr'}
         resistSmp = shear_total_TR_MC(iDesignCase, hSmp, betaSmp, fFrpSmp, fcSmp, fctSmp, sqrtFctSmp, fsSmp);
     case{'FIB' 'fib'}

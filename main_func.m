@@ -79,10 +79,10 @@ switch lower(design_code)
         psi_f = (0.10:0.05:2.00)';
         FACTOR_FRP = 1.00;
         TARGET_INDEX = 3.8;
-    case {'gb'}
+    case {'gb', 'gbnew'}
         psi_f = (0.10:0.05:2.00)';
         FACTOR_FRP = 1.00;
-        TARGET_INDEX = 3.2;
+        TARGET_INDEX = 3.2;       
     case {'wu'}
         psi_f = (0.10:0.05:2.00)';
         FACTOR_FRP = 1.00;
@@ -160,6 +160,16 @@ for ischeme=ischeme_start:ischeme_end
                     resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
                 elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
                     [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_GB('MODEL_ERROR', 1.00);
+                    resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
+                else
+                    disp('[main_function]: unknown resistance');
+                end
+            case {'GBnew', 'gbnew'}
+                if strncmpi( SUB_TEST_DATABASE_NAME, 'shear', 5)
+                    [resistanceFromPrediction, isOverReinforce, ro, shearReinforceKN] = shear_total_GBnew('MODEL_ERROR', 1);
+                    resistanceFromTest = V_TOTAL_TEST_ARRAY_KN;
+                elseif strncmpi( SUB_TEST_DATABASE_NAME, 'flexure', 7)
+                    [resistanceFromPrediction,failModeFromPrediction,~] = flexure_total_GBnew('MODEL_ERROR', 1.00);
                     resistanceFromTest = M_TOTAL_TEST_ARRAY_KNM;
                 else
                     disp('[main_function]: unknown resistance');
@@ -296,6 +306,29 @@ for ischeme=ischeme_start:ischeme_end
                                 disp('[main_function]: unknown resistance');
                         end
                     end
+                case {'GBnew', 'gbnew'}
+                    for iFactorFrp = 1:nFactorFrp
+                        switch SUB_TEST_DATABASE_NAME
+                            case {'shear+side', 'shear+U'}
+                                [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
+                                    roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_GBnew('DESIGN_VALUE',...
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                            case {'shear+W'}
+                                [resistanceDesign(:,iFactorFrp), isOverReinforce(:,iFactorFrp),...
+                                    roSteel(:,iFactorFrp), resistReinforce(:,iFactorFrp)] = shear_total_GBnew('DESIGN_VALUE',...
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);                    
+                            case {'flexure+IC', 'flexure+ic'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_GBnew('DESIGN_VALUE',...
+                                    [1.00; FACTOR_FRP(iFactorFrp); psi_f(ipsi)]);
+                            case {'flexure+rup', 'flexure+rupture'}
+                                [resistanceDesign(:,iFactorFrp), failMode(:,iFactorFrp),...
+                                    isSteelYielding(:,iFactorFrp)] = flexure_total_GBnew('DESIGN_VALUE',...
+                                    [FACTOR_FRP(iFactorFrp); 1.00; psi_f(ipsi)]);
+                            otherwise
+                                disp('[main_function]: unknown resistance');
+                        end
+                    end                    
                 case {'WU', 'wu'}
                     for iFactorFrp = 1:nFactorFrp
                         switch SUB_TEST_DATABASE_NAME
@@ -421,7 +454,7 @@ for ischeme=ischeme_start:ischeme_end
                 cov_interval ...
                 running_type fc_type design_code ischeme_start ischeme_end ...
                 fccov_start fccov_end get_bias FACTOR_FRP TARGET_INDEX ...
-                N_MC re_data FAIL_MODE_TEST_ARRAY modelError
+                N_MC re_data FAIL_MODE_TEST_ARRAY modelError FRP_FORM_TEST_ARRAY FRP_FORM_DESIGN
             
             pool = parpool(6);
             parfor iDesignCase = 1:N_DESIGN_CASE

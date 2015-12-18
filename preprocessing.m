@@ -237,7 +237,7 @@ switch DESIGN_CODE
 %         LOAD_FACTOR = [1.2; 1.6];    %PHI=0.75
     case {'HK', 'hk'}
         LOAD_FACTOR = [1.4; 1.6];
-    case {'GB', 'gb'}
+    case {'GB', 'gb', 'GBnew', 'gbnew'}
         LOAD_FACTOR = [1.2; 1.4];
     case {'WU', 'wu'}
         LOAD_FACTOR = [1.2; 1.4];        

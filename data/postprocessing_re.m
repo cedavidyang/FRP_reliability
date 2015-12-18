@@ -9,7 +9,7 @@ switch lower(code)
     case {'hk', 'tr'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.8;
-    case {'gb'}
+    case {'gb', 'gbnew'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.2;
     case {'wu'}
