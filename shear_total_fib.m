@@ -132,10 +132,10 @@ switch FLAG
         kk = 0.17; kc = 1.5;
     otherwise
 end
-edeb = kc*(kk./gammaBond).*kb.*betaL.*sqrt(2*fcm.^(2/3.0)./(EFrpMPA.*tFrpMM));
+edeb = psi_f*kc*(kk./gammaBond).*kb.*betaL.*sqrt(2*fcm.^(2/3.0)./(EFrpMPA.*tFrpMM));
 roFrp = (2*tFrpMM./bBeamMM).*(widthFrpMM./sFrpMM);
 efu = (fFrpMPA./gammaFrp)./(EFrpMPA./gammaEfrp);
-erup = 0.8*0.17.*(fcm.^(2/3.0)./(EFrpMPA.*1e-3.*roFrp)).^(0.30).*efu;
+erup = psi_f*0.8*0.17.*(fcm.^(2/3.0)./(EFrpMPA.*1e-3.*roFrp)).^(0.30).*efu;
 efe = min(edeb, erup);
 efe(isW) = erup(isW);
 

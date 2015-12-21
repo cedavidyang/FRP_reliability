@@ -6,7 +6,7 @@ switch lower(code)
     case {'aci', 'acinew'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.5;
-    case {'hk', 'tr'}
+    case {'hk', 'tr', 'fib'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.8;
     case {'gb', 'gbnew'}
