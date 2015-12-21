@@ -83,7 +83,7 @@ switch frp_form
             h4 = plot(psi_f, norm_RE{4, ifig}, 's-', 'Color', colors(4,:), 'LineWidth', 1, ...
                 'MarkerFace', colors(4,:), 'MarkerEdge', colors(4,:), 'MarkerSize', 4);
             legend([h1, h2, h3, h4], {'\beta_T=3.0', '\beta_T=3.2', '\beta_T=3.5', '\beta_T=3.7'})
-            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
+            xtxt = xlabel('FRP reduction factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
@@ -103,17 +103,20 @@ switch frp_form
         norm_RE_yr50 = {};
         
         for idata = 1:2
-            [re_smpi, mean_REi, std_REi, upper_REi, lower_REi, norm_RE_yr30i, ...
-                norm_RE_yr40i, norm_RE_yr50i] = get_re_data( ...
-                data_struct_array{idata}, psi_f, code, beta_T_50);
+            for ibeta = 1:4
+                [re_smpi, mean_REi, std_REi, upper_REi, lower_REi, norm_RE_yr30i, ...
+                    norm_RE_yr40i, norm_RE_yr50i] = get_re_data( ...
+                    data_struct_array{idata}, psi_f, code, beta_T(ibeta));
+                norm_RE{ibeta, idata} = norm_RE_yr50i;
+            end
             smp_RE{end+1} = re_smpi;
             mean_RE{end+1} = mean_REi;
             std_RE{end+1} = std_REi;
             upper_RE{end+1} = upper_REi;
             lower_RE{end+1} = lower_REi;
-            norm_RE_yr30{end+1} = norm_RE_yr30i;
-            norm_RE_yr40{end+1} = norm_RE_yr40i;
-            norm_RE_yr50{end+1} = norm_RE_yr50i;
+%             norm_RE_yr30{end+1} = norm_RE_yr30i;
+%             norm_RE_yr40{end+1} = norm_RE_yr40i;
+%             norm_RE_yr50{end+1} = norm_RE_yr50i;
         end
 
         %% post processing of shear
@@ -142,10 +145,18 @@ switch frp_form
             axs{end+1} = axes('Parent',figs{end},'FontSize',8,'FontName','Times New Roman');
             box(axs{end},'on');
             hold(axs{end},'all');
-            plot(psi_f, norm_RE_yr30{ifig}, 'ko-', 'LineWidth', 1.5, 'MarkerFace', 'k', 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr40{ifig}, 'b^-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            plot(psi_f, norm_RE_yr50{ifig}, 'rv-', 'LineWidth', 1.5, 'MarkerSize', 4);
-            xtxt = xlabel('FRP calibration factor, \phi_f','FontSize',8,...
+            map = colormap('parula');
+            colors = map(floor(linspace(length(map), 1, 4)), :);
+            h1 = plot(psi_f, norm_RE{1, ifig}, 'o-', 'Color', colors(1,:), 'LineWidth', 1, ...
+                'MarkerFace', colors(1,:), 'MarkerEdge', colors(1,:), 'MarkerSize', 4);
+            h2 = plot(psi_f, norm_RE{2, ifig}, '^-', 'Color', colors(2,:), 'LineWidth', 1, ...
+                'MarkerFace', colors(2,:), 'MarkerEdge', colors(2,:), 'MarkerSize', 4);
+            h3 = plot(psi_f, norm_RE{3, ifig}, 'v-', 'Color', colors(3,:), 'LineWidth', 1, ...
+                'MarkerFace', colors(3,:), 'MarkerEdge', colors(3,:), 'MarkerSize', 4);
+            h4 = plot(psi_f, norm_RE{4, ifig}, 's-', 'Color', colors(4,:), 'LineWidth', 1, ...
+                'MarkerFace', colors(4,:), 'MarkerEdge', colors(4,:), 'MarkerSize', 4);
+            legend([h1, h2, h3, h4], {'\beta_T=3.0', '\beta_T=3.2', '\beta_T=3.5', '\beta_T=3.7'})
+            xtxt = xlabel('FRP reduction factor, \phi_f','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');
             ytxt = ylabel('Mean distance from target','FontSize',8,...
                 'FontName','Times New Roman', 'Interpreter','tex');

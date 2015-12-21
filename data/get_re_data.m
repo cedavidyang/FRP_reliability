@@ -7,7 +7,11 @@ beta_T_40 = life2re(40, beta_T_50);
 switch lower(code)
     case {'aci', 'acinew'}
         for ipsi = 1:npsi
-            re_smp = data_struct.re_data{1}(:, ipsi, :);
+            try
+                re_smp = data_struct.re_data{1}(:, ipsi, :);
+            catch
+                re_smp = data_struct.re_data(1, :, ipsi, :);
+            end
             re_smp = re_smp(:);
             re_smp( isnan(re_smp) ) = [];
             norm_RE_yr30(ipsi) = mean((re_smp-beta_T_30).^2);
