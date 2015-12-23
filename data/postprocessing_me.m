@@ -84,8 +84,17 @@ opts.Lower = [-Inf 0];
 opts.Upper = [Inf 0];
 [cf, stats] = fit(resistanceFromPrediction(indx), resistanceFromTest(indx), 'poly1', opts);
 h = refline(cf.p1, cf.p2); set(h, 'Color', [0, 0.5, 0], 'LineStyle', '--');
-xtxt1 = xlabel('Predicted shear capacity, V_{pre} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
-ytxt1 = ylabel('Test result, V_{exp} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+switch running_type
+    case {1, 2, 3}
+        xtxt1 = xlabel('Predicted shear capacity, V_{pre} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+        ytxt1 = ylabel('Test result, V_{exp} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+    case {4,5}
+        xtxt1 = xlabel('Predicted flexural capacity, M_{pre} (kNm)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+        ytxt1 = ylabel('Test result, M_{exp} (kNm)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
+    otherwise
+        fprintf('illegal running type');
+        break;
+end
 ylim(axes1, [0, 1200]);
 
 %% PDF plot and distribution fitting
