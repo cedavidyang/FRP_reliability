@@ -112,30 +112,18 @@ isSide = (frpForm == 1);
 isU = (frpForm == 2);
 isW = (frpForm == 3);
 
-kbl = 2.0;
-lEff = sqrt( EFrpMPA.*tFrpMM ./ (kbl.*fctm) );
-lb = lEff;
-lb(isSide) = hFrpEff(isSide) ./ 2 ./ sin(beta(isSide));
-lb(isU) = hFrpEff(isU) ./ sin(beta(isU));
+roFrp = (2*tFrpMM./bBeamMM).*(widthFrpMM./sFrpMM);
 
-betaL = lb./lEff .* (2-lb./lEff);
-betaL( lb>lEff ) = 1.0;
-
-tmp = (2-widthFrpMM./(sFrpMM.*sin(beta)))./(1+widthFrpMM./(sFrpMM.*sin(beta)));
-tmp( tmp<0 ) = 0;
-kb = sqrt(tmp);
-kb(kb<1) = 1.0;
 switch FLAG
     case 'MODEL_ERROR'
-        kk = 0.25; kc = 2.0;
+        k = 1.0;
     case 'DESIGN_VALUE'
-        kk = 0.17; kc = 1.5;
+        k = 0.8;
     otherwise
 end
-edeb = psi_f*kc*(kk./gammaBond).*kb.*betaL.*sqrt(2*fcm.^(2/3.0)./(EFrpMPA.*tFrpMM));
-roFrp = (2*tFrpMM./bBeamMM).*(widthFrpMM./sFrpMM);
+edeb = psi_f*k*0.65*(fcm.^(2/3)./(1e-3*EFrpMPA.*roFrp)).^(0.65)*1e-3/gammaBond;
 efu = (fFrpMPA./gammaFrp)./(EFrpMPA./gammaEfrp);
-erup = psi_f*0.8*0.17.*(fcm.^(2/3.0)./(EFrpMPA.*1e-3.*roFrp)).^(0.30).*efu;
+erup = psi_f*k*0.17.*(fcm.^(2/3)./(EFrpMPA.*1e-3.*roFrp)).^(0.30).*efu;
 efe = min(edeb, erup);
 efe(isW) = erup(isW);
 
@@ -151,78 +139,25 @@ ro_s(~indx01) = Asw(~indx01)./(bBeamMM(~indx01).*ssMM(~indx01));
 indx02 = ro_s<0.08*sqrtfck./fsMPA;
 indx0 = indx01 | indx02;
 kv = 180./(1000+1.25*(0.9*dBeamMM));
-shearConc = kv.*sqrt(fcm)./gammaConcrete.*(0.9*dBeamMM).*bBeamMM;
-shearTotalMinKN = 1e-3*(shearConc+Vf);
+Vcd = kv.*sqrt(fcm)./gammaConcrete.*(0.9*dBeamMM).*bBeamMM;
+shearConc = Vcd;
 shearTotalKN(indx0) = 1e-3*(shearConc(indx0)+Vf(indx0));
 kep = 0.55;     % Eq. 7.3-37
 Vrdmax0kN = kep.*mufc.* (fcMPA/gammaConcrete).* bBeamMM .* (0.9*dBeamMM) ./ 2*1e-3;
-indx0c = (indx0 & shearTotalKN>Vrdmax0kN);
-shearTotalKN(indx0c) = Vrdmax0kN(indx0c);
-shearTotalMinKN(shearTotalMinKN>Vrdmax0kN) = shearTotalMinKN(shearTotalMinKN>Vrdmax0kN);
+VrdkN = min(shearTotalKN, Vrdmax0kN);
+shearTotalKN(indx0) = VrdkN(indx0);
 
-%% FRP failure and steel yielding with theta=min\deg
-mindeg = 30;
+%% FRP failure and steel yielding with theta=45\deg
+mindeg = 45;
 theta = mindeg/180*pi;
-% local function
-function Vrdsf = shear_resistance(theta)
-    Vrd = Asw./ssMM.*(0.9*dBeamMM).*(fsMPA/gammaSteel).*cot(theta);
-    Vrdsf = Vrd+Vf;
-end
-Vrdsfmindeg = shear_resistance(theta);
-Vrdmaxmindeg = kep.*mufc .* bBeamMM .* (0.9*dBeamMM) .* (fcMPA/gammaConcrete) .* (sin(theta)+cos(theta));
 
-indx1 = (Vrdmaxmindeg>Vrdsfmindeg) & (~indx0);
-shearTotalKN(indx1) = Vrdsfmindeg(indx1) *1e-3;
+Vsd = Asw./ssMM.*(0.9*dBeamMM).*(fsMPA/gammaSteel).*cot(theta);
+Vrdsf = Vcd+Vsd+Vf;
+VrdkN = min(Vrdsf*1e-3, Vrdmax0kN);
+shearTotalKN(~indx0) = VrdkN(~indx0);
 
-yield_warning(indx1&(fsMPA./ES_MPA>efe)) = 1;
-theta_final(indx1) = theta;
-
-%% concrete crushing with 45\deg strut
-theta0 = 45/180*pi;
-Vrdsf45 = shear_resistance(theta0);
-Vrdmax45 = kep.*mufc.* (fcMPA/gammaConcrete).* bBeamMM .* (0.9*dBeamMM) ./ 2;
-indx2 = (Vrdmax45<Vrdsf45) & (~indx0);
-shearTotalKN(indx2) = Vrdmax45(indx2) *1e-3;
-theta_final(indx2) = theta0;
-
-%% concrete crushing with other deg
-indx3 = (~indx1)&(~indx2)&(~indx0);
-theta1 = mindeg/180*pi*ones(nCase,1); theta1 = theta1(indx3);
-theta2 = 45/180*pi*ones(nCase,1); theta2 = theta2(indx3);
-delta = 1; delta1 = 0.5; delta2 = 0.5;
-conv_tol = sum(delta) / (sum(abs(delta1))+sum(abs(delta2)));
-if ~isempty(indx3)
-    max_shear = @(theta) kep*mufc(indx3) .* bBeamMM(indx3) .* (0.9*dBeamMM(indx3)) .* (fcMPA(indx3)/gammaConcrete) .* (sin(theta)+cos(theta));
-
-%     while norm(theta1-theta2)>THETA_TOL*sqrt(sum(indx3))
-    while conv_tol>REL_TOL
-        thetatmp = (mindeg/180*pi)*ones(nCase,1); thetatmp(indx3) = theta1;
-        Vtmp1 = shear_resistance(thetatmp); Vtmp1 = Vtmp1(indx3);
-        thetatmp = (mindeg/180*pi)*ones(nCase,1); thetatmp(indx3) = theta2;
-        Vtmp2 = shear_resistance(thetatmp); Vtmp2 = Vtmp2(indx3);    
-        delta1 = max_shear(theta1)-Vtmp1;
-        delta2 = max_shear(theta2)-Vtmp2;
-        theta = theta1 - (theta2-theta1).*delta1./(delta2-delta1);
-
-        thetatmp = (mindeg/180*pi)*ones(nCase,1); thetatmp(indx3) = theta;
-        Vtmp = shear_resistance(thetatmp); Vtmp = Vtmp(indx3);  
-        delta = max_shear(theta)-Vtmp;
-
-        theta1(delta>0) = theta1(delta>0); theta2(delta>0)=theta(delta>0);
-        theta1(delta<0) = theta(delta<0); theta2(delta<0)=theta2(delta<0);
-        theta1(delta==0) = theta(delta==0); theta2(delta==0)=theta(delta==0);
-        theta1(isnan(delta)) = theta1(isnan(delta)); theta2(isnan(delta))=theta2(isnan(delta));
-        
-        conv_tol = sum(delta) ./ (sum(abs(delta1))+sum(abs(delta2)));
-    end
-    thetatmp = (mindeg/180*pi)*ones(nCase,1); thetatmp(indx3) = (theta1+theta2)/2;
-    Vtmp = shear_resistance(thetatmp); Vtmp = Vtmp(indx3); 
-    shearTotalKN(indx3) = Vtmp*1e-3;
-    theta_final(indx3) = thetatmp(indx3);
-end
-
-shearTotalKN(shearTotalKN<shearTotalMinKN) = shearTotalMinKN(shearTotalKN<shearTotalMinKN);
-isOverReinforce = indx0c | indx2 | indx3;
+isOverReinforce = shearTotalKN==Vrdmax0kN;
+yield_warning = zeros(nCase,1);
 shearReinforceKN = Vf*1e-3;
 
 return
