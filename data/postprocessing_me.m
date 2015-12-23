@@ -83,7 +83,7 @@ opts = fitoptions( 'Method', 'LinearLeastSquares' );
 opts.Lower = [-Inf 0];
 opts.Upper = [Inf 0];
 [cf, stats] = fit(resistanceFromPrediction(indx), resistanceFromTest(indx), 'poly1', opts);
-h = refline(cf.p1, cf.p2); set(h, 'Color', [0, 0.5, 0], 'LineStyle', '--');
+h2 = refline(cf.p1, cf.p2); set(h2, 'Color', [0, 0.5, 0], 'LineStyle', '--');
 switch running_type
     case {1, 2, 3}
         xtxt1 = xlabel('Predicted shear capacity, V_{pre} (kN)','FontSize',8,'FontName','Times New Roman', 'interpreter', 'tex');
@@ -96,6 +96,7 @@ switch running_type
         break;
 end
 ylim(axes1, [0, 1200]);
+lgd = legend([h1, h, h2], {'Data', 'R_{exp} = R_{pre}', 'Linear regression'}, 'Location', 'NorthWest');
 
 %% PDF plot and distribution fitting
 figure2 = figure;
