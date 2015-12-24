@@ -6,7 +6,7 @@ switch lower(code)
     case {'aci', 'acinew'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.5;
-    case {'hk', 'tr'}
+    case {'hk', 'tr', 'fib'}
         psi_f = (0.10:0.05:2.00)';
         beta_T_50 = 3.8;
     case {'gb'}
@@ -52,7 +52,7 @@ for ifig=1:3
     hold(axs(ifig),'all');
     xlim(axs(ifig),xbound);
 end
-colors = {'k', 'b', 'r'};
+colors = {'b', 'r', [0,0.5,0]};
 markers = {'o', '^', 'v'};
 
 gamma = 1:0.05:2;
