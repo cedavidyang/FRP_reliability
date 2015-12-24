@@ -2,7 +2,7 @@ clear;
 
 frp_form = input('frp for shear or flexure: 1 for shear, 2 for flexure\n');
 code = input('design code\n', 's');
- psi_f = (0.10:0.05:2.00)';
+psi_f = (0.10:0.05:2.00)';
 life = 10:5:50;
 beta_T = [3.0, 3.2, 3.5, 3.7];
 
@@ -38,7 +38,7 @@ switch frp_form
                     [~, ~, ~, ~, ~, ~, ~, norm_RE_array] = get_re_data( ...
                         data_struct_array{idata}, psi_f, code, beta_T_life);
                     cubespline = csapi(psi_f, norm_RE_array');
-                    [norm_min, psi] = fnmin(cubespline, [0.1, 2.0]);
+                    [norm_min, psi] = fnmin(cubespline, [0.1, 2.00]);
                     psi_array(ibeta, idata, iyear) = psi;
                 end
             end
@@ -59,8 +59,13 @@ switch frp_form
                     beta_T_life = life2re(ilife, beta_T(ibeta));
                     [~, ~, ~, ~, ~, ~, ~, norm_RE_array] = get_re_data( ...
                         data_struct_array{idata}, psi_f, code, beta_T_life);
-                    cubespline = csapi(psi_f, norm_RE_array');
-                    [norm_min, psi] = fnmin(cubespline, [0.1, 2.0]);
+                    if idata==1
+                        cubespline = csapi(psi_f, norm_RE_array');
+                        [norm_min, psi] = fnmin(cubespline, [0.1, 2.00]);
+                    else
+                        cubespline = csapi(psi_f(psi_f<=1.00), norm_RE_array(psi_f<=1.00)');
+                        [norm_min, psi] = fnmin(cubespline, [0.1, 1.00]);
+                    end
                     psi_array(ibeta, idata, iyear) = psi;
                 end
             end
